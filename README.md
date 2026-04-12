@@ -30,3 +30,7 @@
     $ git push origin [提交分支]
 
 ### 网页提Pull Request
+点击 New Pull Request
+![](./docs/images/PR.png)
+选择base以及compare, 然后create pull request
+![](./docs/images/PR2.png)
