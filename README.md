@@ -34,3 +34,6 @@
 ![](./docs/images/PR.png)
 选择base以及compare, 然后create pull request
 ![](./docs/images/PR2.png)
+## 工具
+仿真工具verilator, 波形gtkwave
+    [verilator install link](https://verilator.org/guide/latest/install.html)

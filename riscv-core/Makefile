@@ -1,6 +1,7 @@
-TOPNAME = top
-TEST_TOPNAME = Regfile_tb
-DUT_SRC = src/Regfile.v
+TOPNAME = top #之后用于cpu测试
+
+TEST_TOPNAME ?= IFU_tb
+DUT_SRC ?= src/IFU.v src/IMEM.v
 
 VSRC=$(wildcard src/*.v)
 CSRC=$(wildcard csrc/*.c)
@@ -15,22 +16,19 @@ VERILATOR_CFLAGS += -MMD -cc --build \
 				-O3 --x-assign fast --x-initial fast --autoflush
 
 #----------------cpp test----------------
-all: $(BIN)
+all: $(TEST_BIN)
 
-$(BIN): $(VSRC) $(CSRC)
-	@rm -rf $(OBJ_DIR)
-	@$(VERILATOR) $(VERILATOR_CFLAGS) \
-		--top-module $(TOPNAME) $^ \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+# $(BIN): $(VSRC) $(CSRC)
+# 	@rm -rf $(OBJ_DIR)
+# 	@$(VERILATOR) $(VERILATOR_CFLAGS) \
+# 		--top-module $(TOPNAME) $^ \
+# 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
-run: $(BIN)
-	@$(BIN)
-
-clean:
-	@rm -rf $(BUILD_DIR)
+# run: $(BIN)
+# 	@$(BIN)
 
 #----------------sv test----------------
-VERILATOR_TEST_FLAGS = -Wall --binary --build -O3 -sv --timing \
+VERILATOR_TEST_FLAGS = --binary --build -O3 -sv --timing \
 			--trace --trace-structs \
 			--x-assign fast --x-initial fast --autoflush
 TEST_OBJ_DIR = $(BUILD_DIR)/test_obj_dir
@@ -54,5 +52,8 @@ test: $(TEST_BIN)
 
 wave: test
 	@gtkwave $(BUILD_DIR)/waveform.vcd
+
+clean:
+	@rm -rf $(BUILD_DIR)
 
 .PHONY: run clean test wave
