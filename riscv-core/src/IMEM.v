@@ -11,7 +11,7 @@ module IMEM (
 
     initial begin
         for (int i = 0; i < 1024; i = i + 1) begin
-            mem[i] = i;
+            mem[i] = i+1;
         end
         // $readmemb("instruction.bin", mem);
     end
