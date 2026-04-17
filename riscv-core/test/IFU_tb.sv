@@ -67,8 +67,9 @@ module IFU_tb();
         #20
         wb_if_pc_valid = 1;
         wb_if_pc = 32'h00000010;
+        #10
+        wb_if_pc_valid = 0; 
         id_if_instr_ready = 1;
-        #10 wb_if_pc_valid = 0; 
         #400
         $display("Test completed!");
         
