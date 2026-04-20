@@ -12,191 +12,177 @@ module LSU (
     input [1:0] ex_lsu_ctrl,           // 00: no action, 01: read, 10: write
     input [1:0] ex_lsu_size,        // 00: byte, 01: half-word, 10: word
 
-    input ex_lsu_wb_data,
+    input [`XLEN-1:0] ex_lsu_wb_data,
     input [4:0] ex_lsu_wb_rd,
     input ex_lsu_wb_wen,
     
     // Output to Write Back Unit
     output reg lsu_wbu_valid,
-    input wbu_lsu_ready,
     output reg [`XLEN-1:0] lsu_wbu_data, // Data
     output reg [4:0] lsu_wbu_rd,        // Destination register
     output reg lsu_wbu_wen,             // Write enable for WBU
 
-    // Memory Interface (AXI-lite)
-    output reg mem_awvalid,
-    input mem_awready,
-    output reg [`XLEN-1:0] mem_awaddr,
-    
-    output reg mem_wvalid,
-    input mem_wready,
-    output reg [`XLEN-1:0] mem_wdata,
-    output reg [3:0] mem_wstrb, // Write strobe for byte enables
-
-    input mem_bvalid,
-    output mem_bready,
-
-    output reg mem_arvalid,
-    input mem_arready,
-    output reg [`XLEN-1:0] mem_araddr,
-
-    input mem_rvalid,
-    output mem_rready,
-    input [`XLEN-1:0] mem_rdata,
-    input mem_rlast
+    // Data cache Interface
+    output lsu_cache_valid,
+    output lsu_cache_wen,
+    output [`XLEN-1:0] lsu_cache_addr,
+    output [`XLEN-1:0] lsu_cache_wdata,
+    output [3:0] lsu_cache_wmask,
+    output [1:0] lsu_cache_size,
+    input [`XLEN-1:0] cache_lsu_rdata,
+    input cache_lsu_hit
 );
-wire ex_lsu_handshaked = ex_lsu_valid && lsu_ex_ready;
-wire mem_aw_handshaked = mem_awvalid && mem_awready;
-wire mem_w_handshaked = mem_wvalid && mem_wready;
-wire mem_b_handshaked = mem_bvalid && mem_bready;
-wire mem_ar_handshaked = mem_arvalid && mem_arready;
-wire mem_r_handshaked = mem_rvalid && mem_rready;
-reg state, next_state; // 0: idle, 1: processing
-localparam IDLE = 0, PROCESS = 1;
 
-always @(posedge) begin
-    if (rst) begin
-        state <= 0;
-    end
-    else begin
-        state <= next_state;
-    end
-end
+    // Internal state for pipeline
+    reg lsu_state;  // 00: idle, 01: waiting for cache, 10: data ready
+    localparam IDLE = 0, WAITING = 1;
+    // Request buffer for cache misses
+    reg [`XLEN-1:0] pending_addr;
+    reg [`XLEN-1:0] pending_wdata;
+    reg [`XLEN-1:0] wdata;
+    reg [3:0] pending_wmask, wmask;
+    reg [1:0] pending_size;
+    reg [4:0] pending_rd;
+    reg pending_cache_wen;
+    reg [`XLEN-1:0] wb_data; // Data to write back to WBU
+    wire cache_wen = ex_lsu_valid ? (ex_lsu_ctrl == 2'b10) : 1'b0; // Write enable for cache
+    
+    // Connect cache interface
+    assign lsu_cache_valid = (lsu_state == WAITING) || (ex_lsu_valid && (ex_lsu_ctrl != 2'b00));
+    assign lsu_ex_ready = (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl == 2'b00)) || 
+        (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl != 2'b00) && cache_lsu_hit) ||
+        (lsu_state == WAITING && cache_lsu_hit);
+    assign lsu_cache_addr = (lsu_state == WAITING) ? pending_addr : ex_lsu_addr;
+    assign lsu_cache_wdata = (lsu_state == WAITING) ? pending_wdata : wdata;
+    assign lsu_cache_wmask = (lsu_state == WAITING) ? pending_wmask : wmask;
+    assign lsu_cache_wen = (lsu_state == WAITING) ? pending_cache_wen : cache_wen; // Write enable for cache
+    assign lsu_cache_size = (lsu_state == WAITING) ? pending_size : ex_lsu_size;
+    
+    always @(posedge clk) begin
+        if (rst) begin
+            lsu_state <= IDLE;
+            lsu_wbu_valid <= 1'b0;
+            lsu_wbu_data <= 32'h0;
+            lsu_wbu_rd <= 5'h0;
+            lsu_wbu_wen <= 1'b0;
 
-always @(*) begin
-    case (state)
-        IDLE: begin
-            if (ex_lsu_handshaked) begin
-                if (ex_lsu_ctrl == 2'b00) begin // no action, directly pass through for write-back data
-                    next_state = IDLE;
-                end
-                else if (ex_lsu_ctrl == 2'b01) begin // read operation
-                    next_state = PROCESS;
-                end
-                else if (ex_lsu_ctrl == 2'b10) begin // write operation
-                    next_state = PROCESS; 
-                end
-                else begin
-                    next_state = IDLE;
-                end
-            end
-            else begin
-                next_state = IDLE;
-            end
-        end
-        PROCESS: begin
-            if (mem_b_handshaked || mem_r_handshaked) begin
-                next_state = IDLE;
-            end
-        end
-        default: begin
-            next_state = IDLE;
-        end
-    endcase
-end
-assign mem_bready = state == PROCESS; // Always ready to accept write response
-assign mem_rready = state == PROCESS; // Always ready to accept read data (for simplicity
-
-always @(posedge clk) begin
-    if (rst) begin
-        mem_awvalid <= 0;
-        mem_wvalid <= 0;
-        mem_arvalid <= 0;
-        lsu_ex_ready <= 0;
-    end
-    else begin
-        case (state)
-            IDLE: begin
-                lsu_ex_ready <= 1'b1; // Ready to accept new request
-                mem_awvalid <= 0;
-                mem_wvalid <= 0;
-                mem_arvalid <= 0;
-                if (ex_lsu_handshaked) begin
-                    if (ex_lsu_ctrl == 2'b01) begin // read operation
-                        mem_arvalid <= 1'b1;
-                        mem_araddr <= ex_lsu_addr;
-                        lsu_ex_ready <= 0; // Not ready to accept new request until current one is processed
+            pending_addr <= 32'h0;
+            pending_wdata <= 32'h0;
+            pending_wmask <= 4'b0000;
+            pending_size <= 2'b00;
+            pending_rd <= 5'h0;
+            pending_cache_wen <= 1'b0;
+        end else begin
+            lsu_wbu_valid <= 1'b0; 
+            lsu_wbu_data <= 32'h0;
+            lsu_wbu_rd <= 5'h0;
+            lsu_wbu_wen <= 1'b0;
+            case (lsu_state)
+                IDLE: begin  // IDLE - Ready to accept requests                 
+                    if (ex_lsu_valid && (ex_lsu_ctrl != 2'b00)) begin
+                        // Check cache hit/miss
+                        if (cache_lsu_hit) begin
+                            // Cache hit - return data immediately
+                            lsu_wbu_valid <= 1'b1;
+                            lsu_wbu_data <= wb_data;
+                            lsu_wbu_rd <= ex_lsu_wb_rd;
+                            lsu_wbu_wen <= ex_lsu_wb_wen;
+                            lsu_state <= IDLE;  // Stay in idle for next request
+                        end else begin
+                            // Cache miss - stall pipeline and save request
+                            lsu_wbu_valid <= 1'b0; // Don't send data to WBU yet
+                            pending_cache_wen <= cache_wen;
+                            pending_addr <= ex_lsu_addr;
+                            pending_wdata <= wdata;
+                            pending_wmask <= wmask;
+                            pending_size <= ex_lsu_size;
+                            pending_rd <= ex_lsu_wb_rd;
+                            lsu_state <= WAITING;  // Move to waiting state
+                        end
+                    end 
+                    else if(ex_lsu_valid) begin // No memory operation, just pass through for write-back
+                        lsu_wbu_valid <= 1'b1;
+                        lsu_wbu_data <= wb_data;
+                        lsu_wbu_rd <= ex_lsu_wb_rd;
+                        lsu_wbu_wen <= ex_lsu_wb_wen;
+                        lsu_state <= IDLE;
                     end
-                    else if (ex_lsu_ctrl == 2'b10) begin // write operation
-                        mem_awvalid <= 1'b1;
-                        mem_awaddr <= ex_lsu_addr;
-                        mem_wvalid <= 1'b1;
-                        mem_wdata <= ex_lsu_data;
-                        lsu_ex_ready <= 0; // Not ready to accept new request until current one is processed
-                        case (ex_lsu_size)
-                            2'b00: mem_wstrb <= (4'b0001 << ex_lsu_addr[1:0]); // byte
-                            2'b01: mem_wstrb <= (4'b0011 << ex_lsu_addr[1:0]); // half-word
-                            2'b10: mem_wstrb <= 4'b1111; // word
-                            default: mem_wstrb <= 4'b0000;
-                        endcase
+                    else begin
+                        lsu_wbu_valid <= 1'b0;
+                        lsu_state <= IDLE; // Stay in idle if no valid request
                     end
                 end
-            end
-            PROCESS: begin
-                lsu_ex_ready <= 0; // Not ready to accept new request until current one is processed
-                if (mem_aw_handshaked) begin
-                    mem_awvalid <= 0; // Deassert after handshake
-                    mem_awaddr <= 0;
-                end
-                if (mem_w_handshaked) begin
-                    mem_wvalid <= 0; // Deassert after handshake
-                    mem_wdata <= 0;
-                    mem_wstrb <= 0;
-                end
-                if (mem_ar_handshaked) begin
-                    mem_arvalid <= 0; // Deassert after handshake
-                    mem_araddr <= 0;
-                end
-                else if (mem_b_handshaked || mem_r_handshaked) begin
-                    lsu_ex_ready <= 1'b1; // Ready for next request after current one is done
-                end
-            end
-        endcase
-    end
-end
+                WAITING: begin  // WAITING - Waiting for cache miss data
+                    // Check if cache hit now (data fetched from memory)
+                    if (cache_lsu_hit) begin
+                        // Cache hit - data is ready
+                        lsu_wbu_valid <= 1'b1;
+                        lsu_wbu_data <= wb_data;
+                        lsu_wbu_rd <= pending_rd;
+                        lsu_wbu_wen <= ~pending_cache_wen;
+                        lsu_state <= IDLE;  // Move to data ready state
 
-always @(posedge clk) begin
-    if (rst) begin
-        lsu_wbu_data <= `XLEN'b0;
-        lsu_wbu_rd <= 5'b0;
-        lsu_wbu_wen <= 1'b0;
-        lsu_wbu_valid <= 1'b0;
+                        pending_cache_wen <= 1'b0; // Clear pending write enable
+                        pending_addr <= 32'h0; // Clear pending address
+                        pending_wdata <= 32'h0; // Clear pending data
+                        pending_wmask <= 4'b0000; // Clear pending write mask
+                        pending_size <= 2'b00; // Clear pending size
+                        pending_rd <= 5'h0; // Clear pending destination register
+                    end else begin
+                        // Still waiting
+                        lsu_state <= WAITING;
+                    end
+                end
+            endcase
+        end
     end
-    else if (ex_lsu_handshaked && ex_lsu_ctrl == 2'b00) begin // directly pass through for write-back data
-        lsu_wbu_data <= ex_lsu_wb_data;
-        lsu_wbu_rd <= ex_lsu_wb_rd;
-        lsu_wbu_wen <= ex_lsu_wb_wen;
-        lsu_wbu_valid <= 1'b1;
+
+    always @(*) begin
+        wmask = 4'b0000; // Default to no write
+        wdata = ex_lsu_data; // Default to input data
+        if (ex_lsu_valid) begin
+            if (ex_lsu_ctrl==2'b10) begin
+                case (ex_lsu_size)
+                    2'b00: begin
+                        wmask = (4'b0001 << ex_lsu_addr[1:0]); // Byte
+                        wdata = ex_lsu_data << (ex_lsu_addr[1:0] * 8); // Shift data to correct byte position
+                    end
+                    2'b01: begin
+                        wmask = (4'b0011 << ex_lsu_addr[1:0]); // Half-word
+                        wdata = ex_lsu_data << (ex_lsu_addr[1:0] * 8); // Shift data to correct half-word position
+                    end
+                    2'b10: begin
+                        wmask = 4'b1111; // Word
+                        wdata = ex_lsu_data;
+                    end
+                    default: begin
+                        wmask = 4'b0000; // No write
+                        wdata = ex_lsu_data;
+                    end
+                endcase
+            end
+        end
     end
-    else if (ex_lsu_handshaked && ex_lsu_ctrl == 2'b01) begin // read operation, wait for mem_rvalid
-        lsu_wbu_data <= 0;
-        lsu_wbu_rd <= ex_lsu_wb_rd;
-        lsu_wbu_wen <= ex_lsu_wb_wen;
-        lsu_wbu_valid <= 1'b0; // wait for mem_rvalid
+
+    always @(*) begin
+        wb_data = ex_lsu_wb_data; // Default to ALU result for write-back
+        if (cache_lsu_hit & !lsu_cache_wen) begin
+            if (lsu_state == IDLE) begin
+                case (ex_lsu_size)
+                2'b00: wb_data = {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]}; // Byte
+                2'b01: wb_data = {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]}; // Half-word
+                2'b10: wb_data = cache_lsu_rdata;// Word
+                default: $finish;
+                endcase
+            end
+            else if (lsu_state == WAITING) begin
+                case (pending_size)
+                2'b00: wb_data = {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]}; // Byte
+                2'b01: wb_data = {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]}; // Half-word
+                2'b10: wb_data = cache_lsu_rdata;// Word
+                default: $finish;
+                endcase
+            end
+        end
     end
-    else if (ex_lsu_handshaked && ex_lsu_ctrl == 2'b10) begin // write operation, wait for mem_bvalid
-        lsu_wbu_data <= 0;
-        lsu_wbu_rd <= 5'b0; // no destination register for write operation
-        lsu_wbu_wen <= 1'b0; // no write-back for write operation
-        lsu_wbu_valid <= 1'b0; // wait for mem_bvalid
-    end
-    else if (mem_r_handshaked) begin // read data is ready
-        lsu_wbu_data <= mem_rdata;
-        lsu_wbu_rd <= lsu_wbu_rd; // keep the same destination register
-        lsu_wbu_wen <= lsu_wbu_wen;
-        lsu_wbu_valid <= 1'b1; // data is ready for write-back
-    end
-    else if (mem_b_handshaked) begin // write data is ready
-        lsu_wbu_data <= 0;
-        lsu_wbu_rd <= 5'b0; // no destination register for write operation
-        lsu_wbu_wen <= 1'b0; // no write-back for write operation
-        lsu_wbu_valid <= 1'b1; // data is ready for write-back
-    end
-    else begin
-        lsu_wbu_data <= 0;
-        lsu_wbu_rd <= 5'b0;
-        lsu_wbu_wen <= 1'b0;
-        lsu_wbu_valid <= 1'b0;
-    end
-end
 endmodule

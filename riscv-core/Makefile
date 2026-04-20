@@ -1,7 +1,7 @@
 TOPNAME = top #之后用于cpu测试
 
-TEST_TOPNAME ?= IFU_tb
-DUT_SRC ?= src/IFU.v src/IMEM.v
+TEST_TOPNAME ?= LSU_tb
+DUT_SRC ?= src/LSU.v src/L1_cache.v
 
 VSRC=$(wildcard src/*.v)
 CSRC=$(wildcard csrc/*.c)
