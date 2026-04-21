@@ -37,3 +37,48 @@
 ## 工具
 仿真工具verilator, 波形gtkwave
     [verilator install link](https://verilator.org/guide/latest/install.html)
+## 编译说明
+
+### 环境配置
+本项目使用 RISC-V 工具链编译，支持 RV32I 指令集。
+
+**编译工具链配置：**
+- 默认使用 `riscv64-linux-gnu` 工具链
+- 也可以使用 `riscv32-unknown-elf` 工具链（需要修改Makefile中的CROSS_COMPILE）
+
+```bash
+# 使用默认工具链
+make
+
+# 编译单个测试
+make ALL=add
+
+# 清理编译文件
+make clean
+```
+
+### 编译流程
+
+**编译选项：**
+- 架构：RV32I (`-march=rv32i`)
+- ABI：ilp32 (`-mabi=ilp32`)
+- 优化级别：O2 (`-O2`)
+- 不依赖标准库 (`-nostdlib -ffreestanding`)
+
+**生成文件：**
+- `.elf` - ELF格式可执行文件
+- `.bin` - 二进制文件
+- `.txt` - 反汇编代码（包含源码和汇编对应关系）
+
+**文件组织：**
+- `src/` - 源文件（包括start.S启动代码和trm.c业务逻辑）
+- `test/` - 测试程序
+- `build/` - 编译生成的目标文件
+- `script/` - 链接脚本（link.ld）
+
+### 验证编译结果
+查看反汇编文件了解程序运行逻辑：
+```bash
+cat build/add.txt  # 查看add程序的反汇编代码
+```
+
