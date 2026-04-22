@@ -34,14 +34,15 @@ SRC_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_C_SOURCES)) \
 # Test objects
 TEST_OBJECTS = $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(TESTS)))
 
-# ELF, BIN, and TXT files to generate
+# ELF, BIN, HEX, and TXT files to generate
 ELF_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .elf,$(TESTS)))
 BIN_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .bin,$(TESTS)))
+HEX_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .hex,$(TESTS)))
 TXT_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .txt,$(TESTS)))
 
 .PHONY: all clean
 
-all: $(ELF_FILES) $(BIN_FILES) $(TXT_FILES)
+all: $(ELF_FILES) $(BIN_FILES) $(HEX_FILES) $(TXT_FILES)
 
 # Compile src/*.c files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -62,6 +63,10 @@ $(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o $(SRC_OBJECTS)
 # Generate binary files
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
 	$(OBJCOPY) -O binary $< $@
+
+# Generate hex files for simulation
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.bin
+	python3 scripts/bin2hex.py $< $@
 
 # Generate disassembly files
 $(BUILD_DIR)/%.txt: $(BUILD_DIR)/%.elf
