@@ -1,7 +1,15 @@
 TOPNAME = top #之后用于cpu测试
 
-TEST_TOPNAME ?= LSU_tb
-DUT_SRC ?= src/LSU.v src/L1_cache.v
+ifeq ($(ALL),IFU)
+	TEST_TOPNAME = IFU_tb
+	DUT_SRC = src/IFU.v src/IMEM.v
+else ifeq ($(ALL),LSU)
+	TEST_TOPNAME = LSU_tb
+	DUT_SRC = src/LSU.v src/L1_cache.v
+else
+	TEST_TOPNAME = LSU_tb
+	DUT_SRC = src/LSU.v src/L1_cache.v
+endif
 
 VSRC=$(wildcard src/*.v)
 CSRC=$(wildcard csrc/*.c)
@@ -44,13 +52,15 @@ $(TEST_BIN): $(TB_SRC) $(DUT_SRC)
 	@echo "=========================================="
 	@$(VERILATOR) $(VERILATOR_TEST_FLAGS) \
 			-I$(INCLUDE_DIRS) \
+			-DIMG_PATH="\"../build/add.bin\"" \
 			--top-module $(TEST_TOPNAME) $^ \
 			--Mdir $(TEST_OBJ_DIR) -o $(abspath $(TEST_BIN))
 
 test: $(TEST_BIN)
 	@$(TEST_BIN)
 
-wave: test
+
+wave: $(BUILD_DIR)/waveform.vcd
 	@gtkwave $(BUILD_DIR)/waveform.vcd
 
 clean:

@@ -101,35 +101,34 @@ module LSU_tb;
         input [4:0] wb_rd,
         input wb_wen,
         input [`XLEN-1:0] wb_data,
-        input integer repeat_count = 2
+        input is_consecutive = 0
     );
     begin
-        repeat (repeat_count) begin
         
-            test_num = test_num + 1;
-            #1
-            ex_lsu_valid = 1'b1;
-            ex_lsu_addr = addr;
-            ex_lsu_data = data;
-            ex_lsu_ctrl = ctrl;
-            ex_lsu_size = size;
-            ex_lsu_wb_rd = wb_rd;
-            ex_lsu_wb_wen = wb_wen;
-            ex_lsu_wb_data = wb_data;
-            
-            // Wait for handshake: lsu_ex_ready must be 1
+        test_num = test_num + 1;
+        #1
+        ex_lsu_valid = 1'b1;
+        ex_lsu_addr = addr;
+        ex_lsu_data = data;
+        ex_lsu_ctrl = ctrl;
+        ex_lsu_size = size;
+        ex_lsu_wb_rd = wb_rd;
+        ex_lsu_wb_wen = wb_wen;
+        ex_lsu_wb_data = wb_data;
+        
+        // Wait for handshake: lsu_ex_ready must be 1
+        @(posedge clk);
+        cycle_count = cycle_count + 1;
+        while (!lsu_ex_ready) begin       
             @(posedge clk);
             cycle_count = cycle_count + 1;
-            while (!lsu_ex_ready) begin       
-                @(posedge clk);
-                cycle_count = cycle_count + 1;
-            end
-            $display("[Test %0d] Memory request sent at cycle %0d: addr=0x%08x, ctrl=%b, size=%b", 
-                 test_num, cycle_count, addr, ctrl, size);
         end
+        $display("[Test %0d] Memory request sent at cycle %0d: addr=0x%08x, ctrl=%b, size=%b", 
+                test_num, cycle_count, addr, ctrl, size);
         #1
-        ex_lsu_valid = 1'b0;
-        
+        if (!is_consecutive) begin
+            ex_lsu_valid = 1'b0;
+        end
     end
     endtask
     
@@ -264,16 +263,13 @@ module LSU_tb;
         $display("\n[Group 5] STRESS TEST: Sequential accesses");
         
         // Test 17-24: Sequential writes and reads
-        send_memory_request(32'h00001000, 32'h11111111, 2'b10, 2'b10, 5'd17, 1'b0, 32'h0);
-        wait_cycles(1);
+        send_memory_request(32'h00001000, 32'h11111111, 2'b10, 2'b10, 5'd17, 1'b0, 32'h0, 1'b1);
         
-        send_memory_request(32'h00001001, 32'h22222222, 2'b10, 2'b10, 5'd18, 1'b0, 32'h0);
-        wait_cycles(1);
+        send_memory_request(32'h00001004, 32'h22222222, 2'b10, 2'b10, 5'd18, 1'b0, 32'h0, 1'b1);
         
-        send_memory_request(32'h00001002, 32'h33333333, 2'b10, 2'b10, 5'd19, 1'b0, 32'h0);
-        wait_cycles(1);
+        send_memory_request(32'h00001008, 32'h33333333, 2'b10, 2'b10, 5'd19, 1'b0, 32'h0, 1'b1);
         
-        send_memory_request(32'h00001003, 32'h44444444, 2'b10, 2'b10, 5'd20, 1'b0, 32'h0);
+        send_memory_request(32'h0000100C, 32'h44444444, 2'b10, 2'b10, 5'd20, 1'b0, 32'h0, 1'b0);
         wait_cycles(1);
         
         // Now read them back
@@ -281,15 +277,15 @@ module LSU_tb;
         wait_wbu_response();
         wait_cycles(1);
         
-        send_memory_request(32'h00001001, 32'h0, 2'b01, 2'b10, 5'd22, 1'b1, 32'h0);
+        send_memory_request(32'h00001004, 32'h0, 2'b01, 2'b10, 5'd22, 1'b1, 32'h0);
         wait_wbu_response();
         wait_cycles(1);
         
-        send_memory_request(32'h00001002, 32'h0, 2'b01, 2'b10, 5'd23, 1'b1, 32'h0);
+        send_memory_request(32'h00001008, 32'h0, 2'b01, 2'b10, 5'd23, 1'b1, 32'h0);
         wait_wbu_response();
         wait_cycles(1);
         
-        send_memory_request(32'h00001003, 32'h0, 2'b01, 2'b10, 5'd24, 1'b1, 32'h0);
+        send_memory_request(32'h0000100C, 32'h0, 2'b01, 2'b10, 5'd24, 1'b1, 32'h0);
         wait_wbu_response();
         wait_cycles(2);
         

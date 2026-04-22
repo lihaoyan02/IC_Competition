@@ -1,8 +1,8 @@
-# L1数据缓存实现说明
+# LSU实现说明
 
 ## 概述
 
-重新实现了L1数据缓存，用于LSU模块测试。该缓存具有以下特性：
+实现了L1数据缓存，用于LSU模块测试。该缓存具有以下特性：
 
 1. **简单的内存架构**：1K个32位存储位置
 2. **递增初始化**：每个地址存储其自身的地址值作为初值
@@ -25,7 +25,7 @@
 | rst | IN | 1 | 复位信号（高电平有效） |
 | valid | IN | 1 | 有效请求信号 |
 | wen | IN | 1 | 写使能信号 |
-| addr | IN | 32 | 内存地址（使用低10位） |
+| addr | IN | 32 | 内存地址（使用低12位） |
 | wdata | IN | 32 | 写入数据 |
 | wmask | IN | 4 | 写掩码（按字节：bit0=byte0, bit1=byte1, ...） |
 | size | IN | 2 | 数据大小：00=字节，01=半字，10=字 |
@@ -42,7 +42,7 @@ end
 ```
 
 内存采用32位字粒度，共1K个单元。地址结构：
-- addr[9:2] - 字地址，索引1K个32位单元
+- addr[11:2] - 字地址，索引1K个32位单元
 - addr[1:0] - 字节偏移，用于字节寻址
 
 ##### LFSR随机数生成器
@@ -91,10 +91,10 @@ always @(posedge clk) begin
         lfsr <= {lfsr[30:0], lfsr_out};
         if (hit & wen) begin
             // Write hit - update memory with write mask
-            if (wmask[0]) memory[mem_addr[9:2]][7:0]   <= wdata[7:0];
-            if (wmask[1]) memory[mem_addr[9:2]][15:8]  <= wdata[15:8];
-            if (wmask[2]) memory[mem_addr[9:2]][23:16] <= wdata[23:16];
-            if (wmask[3]) memory[mem_addr[9:2]][31:24] <= wdata[31:24];
+            if (wmask[0]) memory[mem_addr[11:2]][7:0]   <= wdata[7:0];
+            if (wmask[1]) memory[mem_addr[11:2]][15:8]  <= wdata[15:8];
+            if (wmask[2]) memory[mem_addr[11:2]][23:16] <= wdata[23:16];
+            if (wmask[3]) memory[mem_addr[11:2]][31:24] <= wdata[31:24];
         end
     end
 end
@@ -240,6 +240,8 @@ cd /home/lhy/IC_Competition/riscv-core
 make TEST_TOPNAME=LSU_tb DUT_SRC="src/LSU.v src/L1_cache.v" test
 
 # 查看波形（需要wave viewer）
+make wave
+# or
 gtkwave build/waveform.vcd
 ```
 
@@ -304,6 +306,7 @@ task send_memory_request(
     input [`XLEN-1:0] wb_data
 );
 begin
+    #1 // 伪时序逻辑
     ex_lsu_valid = 1'b1;
     ex_lsu_addr = addr;
     ex_lsu_data = data;
@@ -314,9 +317,9 @@ begin
     ex_lsu_wb_data = wb_data;
     
     // 关键：等待握手成功
-    while (!lsu_ex_ready) @(posedge clk);  // 若缓存未命中，这里会循环多次
-    
     @(posedge clk);
+    while (!lsu_ex_ready) @(posedge clk); // 若缓存未命中，这里会循环多次
+    
     ex_lsu_valid = 1'b0;
 end
 endtask

@@ -32,11 +32,39 @@ module L1_cache (
     integer i;
     // Initialize memory with values equal to the address (incrementing)
     initial begin
-        for (i = 0; i < MEM_SIZE; i = i + 1) begin
-            memory[i] = i;  // Each address contains its own address as value
-        end
+        // for (i = 0; i < MEM_SIZE; i = i + 1) begin
+        //     memory[i] = i;  // Each address contains its own address as value
+        // end
+        read_binary_file(`IMG_PATH);
         lfsr = 32'hACE1;  // Non-zero seed for LFSR
     end
+
+    task read_binary_file(string filename);
+        integer fd, i, byte_val;
+        reg [7:0] bytes [3:0];
+        begin
+            fd = $fopen(filename, "rb");
+            if (fd == 0) begin
+                $display("ERROR: Cannot open file %s", filename);
+                $finish;
+            end
+            
+            i = 0;
+            while (!$feof(fd) && i < 1024) begin
+                // Read 4 bytes (32-bit word)
+                if ($fread(bytes, fd) > 0) begin
+                    // Combine bytes in little-endian order
+                    memory[i] = {bytes[3], bytes[2], bytes[1], bytes[0]};
+                    i = i + 1;
+                end else begin
+                    break;
+                end
+            end
+            
+            $fclose(fd);
+            $display("Loaded %0d words from %s", i, filename);
+        end
+    endtask
     
     // LFSR (Linear Feedback Shift Register) for random number generation
     // Using Fibonacci LFSR with taps at bits 31, 30, 28, 26
