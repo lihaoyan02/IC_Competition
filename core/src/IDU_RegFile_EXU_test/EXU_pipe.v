@@ -1,33 +1,4 @@
 `include "macro.v"
-module EXU (
-    input clk,
-    input rst,
-    
-    // From IDU (Instruction Decode Unit)
-
-    input id_ex_valid,
-    output reg ex_id_ready,
-    input [3:0] id_ex_alu_ctrl,
-    input [1:0] id_ex_op1,
-    input [1:0] id_ex_op2,
-    input [`XLEN-1:0] id_ex_imm,
-    input [`XLEN-1:0] id_ex_rs1_data,
-    input [`XLEN-1:0] id_ex_rs2_data,
-
-    // to lsu (Load Store Unit)
-    output reg ex_lsu_valid,
-    input lsu_ex_ready,
-    output reg [1:0] ex_lsu_ctrl, // 00: no action, 01: read, 10: write
-    output reg [1:0] ex_lsu_size, // 00: byte, 01: half-word, 10: word
-    output reg [`XLEN-1:0] ex_lsu_addr,
-    output reg [`XLEN-1:0] ex_lsu_data
-);
-    
-    // ALU and execution logic here
-    
-endmodule
-
-`include "macro.v"
 
 module EXU #(
     parameter DATA_WIDTH = `XLEN
@@ -35,9 +6,7 @@ module EXU #(
     input clk,
     input rst,
 
-    //========================================================
-    // IDU -> EXU
-    //========================================================
+    // Signals to/from IDU
     input                      id_ex_valid,
     input [`XLEN-1:0]          id_ex_pc,
     input [`XLEN-1:0]          id_ex_imm,
@@ -50,30 +19,23 @@ module EXU #(
     input                      id_ex_rf_we,
     input                      id_ex_lsu_en,
     input                      id_ex_lsu_we,
-    input [2:0]                id_ex_lsu_ctrl,   // <- 建议你在 IDU 中补这个
+    input [2:0]                id_ex_lsu_ctrl,
     input                      ebreak_flag,
     input                      j_en,
     input [2:0]                id_ex_J_cond,
+    output                     ex_id_ready,
+    output reg                 ex_glb_flush,
 
     // CSR read data
     input [`XLEN-1:0]          csr_ex_rdata,
 
-    //========================================================
-    // EXU -> IDU
-    //========================================================
-    output                     ex_id_ready,
-    output reg                 ex_glb_flush,
 
-    //========================================================
-    // EXU -> IFU
-    //========================================================
+    // Signals to/from IFU
     output reg                 ex_if_pc_valid,
     output reg [`XLEN-1:0]     ex_if_pc,
 
-    //========================================================
-    // EXU -> LSU
-    //========================================================
-    output                     ex_lsu_valid,
+    // Signals to/from LSU
+    output reg                 ex_lsu_valid,
     input                      lsu_ex_ready,
     output reg [`XLEN-1:0]     ex_lsu_addr,
     output reg [`XLEN-1:0]     ex_lsu_data,
@@ -86,18 +48,31 @@ module EXU #(
 );
 
     //========================================================
-    // Internal
+    // Internal signals
     //========================================================
     reg [`XLEN-1:0] op1, op2;
     reg [`XLEN-1:0] alu_out;
     reg             j_taken;
 
-    wire is_jalr;
-    assign is_jalr = j_en && (id_ex_J_cond == `J_UNCOND) && (alu_op_ctrl == `OP_RS1_IMM);
+    reg             ex_lsu_valid_nxt;
+    reg [`XLEN-1:0] ex_lsu_addr_nxt;
+    reg [`XLEN-1:0] ex_lsu_data_nxt;
+    reg [1:0]       ex_lsu_ctrl_nxt;
+    reg [1:0]       ex_lsu_size_nxt;
+    reg [`XLEN-1:0] ex_lsu_wb_data_nxt;
+    reg [4:0]       ex_lsu_wb_rd_nxt;
+    reg             ex_lsu_wb_wen_nxt;
 
-    // 当前 EX 指令如果要访问 LSU，则 ready 取决于 LSU
-    assign ex_id_ready  = id_ex_lsu_en ? lsu_ex_ready : 1'b1;
-    assign ex_lsu_valid = id_ex_valid;
+    wire is_jalr;
+    wire ex_need_lsu;
+    wire ex_payload_fire;
+
+    assign is_jalr      = j_en && (id_ex_J_cond == `J_UNCOND) && (alu_op_ctrl == `OP_RS1_IMM);
+    assign ex_need_lsu  = ex_lsu_valid;
+    assign ex_payload_fire = (!ex_need_lsu) || lsu_ex_ready;
+
+    // 标准流水线：只有当前 EX/LSU 寄存器能向下推进时，IDU 才能继续送新指令
+    assign ex_id_ready = ex_payload_fire;
 
     //========================================================
     // Operand select
@@ -127,9 +102,13 @@ module EXU #(
         endcase
     end
 
-    //========================================================
-    // ALU
-    //========================================================
+//***********************************************************//
+//                                                           //
+//                  ALU Function                             //
+//                                                           //
+//                                                           //
+//                                                           //
+//***********************************************************//
     always @(*) begin
         case (id_ex_alu_ctrl)
             `ALU_IDLE          : alu_out = {DATA_WIDTH{1'b0}};
@@ -152,9 +131,13 @@ module EXU #(
         endcase
     end
 
-    //========================================================
-    // Branch / Jump decision
-    //========================================================
+//***********************************************************//
+//                                                           //
+//                  Branching                                //
+//                                                           //
+//                                                           //
+//                                                           //
+//***********************************************************//
     always @(*) begin
         if (j_en) begin
             case (id_ex_J_cond)
@@ -175,7 +158,15 @@ module EXU #(
 
     //========================================================
     // Redirect PC / Flush
+    // 这里保持组合输出，让 IFU 尽快看到 redirect
     //========================================================
+//***********************************************************//
+//                                                           //
+//                  Signals to IFU                           //
+//                                                           //
+//                                                           //
+//                                                           //
+//***********************************************************//
     always @(*) begin
         ex_if_pc_valid = 1'b0;
         ex_if_pc       = {DATA_WIDTH{1'b0}};
@@ -185,43 +176,78 @@ module EXU #(
             ex_if_pc_valid = 1'b1;
             ex_glb_flush   = 1'b1;
 
-            // jalr: rs1 + imm, bit0 = 0
             if (is_jalr)
                 ex_if_pc = (id_ex_rs1_data + id_ex_imm) & ~{{(DATA_WIDTH-1){1'b0}}, 1'b1};
             else
-                // branch / jal : pc + imm
                 ex_if_pc = id_ex_pc + id_ex_imm;
         end
     end
 
     //========================================================
-    // LSU request generation
+    // Next EX/LSU payload generation
     //========================================================
     always @(*) begin
-        // address/data
-        ex_lsu_addr = alu_out;
-        ex_lsu_data = id_ex_rs2_data;
+        ex_lsu_valid_nxt   = id_ex_valid;
+        ex_lsu_addr_nxt    = alu_out;
+        ex_lsu_data_nxt    = id_ex_rs2_data;
+        ex_lsu_wb_data_nxt = alu_out;
+        ex_lsu_wb_rd_nxt   = id_ex_rd;
+        ex_lsu_wb_wen_nxt  = id_ex_rf_we;
 
-        // pass-through WB info
-        ex_lsu_wb_data = alu_out;
-        ex_lsu_wb_rd   = id_ex_rd;
-        ex_lsu_wb_wen  = id_ex_rf_we;
-
-        // LSU ctrl
         if (!id_ex_lsu_en)
-            ex_lsu_ctrl = 2'b00;
+            ex_lsu_ctrl_nxt = 2'b00;
         else if (id_ex_lsu_we)
-            ex_lsu_ctrl = 2'b10;
+            ex_lsu_ctrl_nxt = 2'b10;
         else
-            ex_lsu_ctrl = 2'b01;
+            ex_lsu_ctrl_nxt = 2'b01;
 
-        // access size
         case (id_ex_lsu_ctrl)
-            `F3_LB, `F3_LBU, `F3_SB: ex_lsu_size = 2'b00;
-            `F3_LH, `F3_LHU, `F3_SH: ex_lsu_size = 2'b01;
-            `F3_LW,           `F3_SW: ex_lsu_size = 2'b10;
-            default                  : ex_lsu_size = 2'b10;
+            `F3_LB, `F3_LBU, `F3_SB: ex_lsu_size_nxt = 2'b00;
+            `F3_LH, `F3_LHU, `F3_SH: ex_lsu_size_nxt = 2'b01;
+            `F3_LW,           `F3_SW: ex_lsu_size_nxt = 2'b10;
+            default                  : ex_lsu_size_nxt = 2'b10;
         endcase
+    end
+
+//***********************************************************//
+//                                                           //
+//                  Reg Signals to LSU                       //
+//                                                           //
+//                                                           //
+//                                                           //
+//***********************************************************//
+    always @(posedge clk) begin
+        if (rst) begin
+            ex_lsu_valid   <= 1'b0;
+            ex_lsu_addr    <= {DATA_WIDTH{1'b0}};
+            ex_lsu_data    <= {DATA_WIDTH{1'b0}};
+            ex_lsu_ctrl    <= 2'b00;
+            ex_lsu_size    <= 2'b10;
+            ex_lsu_wb_data <= {DATA_WIDTH{1'b0}};
+            ex_lsu_wb_rd   <= 5'b0;
+            ex_lsu_wb_wen  <= 1'b0;
+        end
+        else if (lsu_ex_ready) begin
+            // 下一级 ready，才能推进
+            ex_lsu_valid   <= ex_lsu_valid_nxt;
+            ex_lsu_addr    <= ex_lsu_addr_nxt;
+            ex_lsu_data    <= ex_lsu_data_nxt;
+            ex_lsu_ctrl    <= ex_lsu_ctrl_nxt;
+            ex_lsu_size    <= ex_lsu_size_nxt;
+            ex_lsu_wb_data <= ex_lsu_wb_data_nxt;
+            ex_lsu_wb_rd   <= ex_lsu_wb_rd_nxt;
+            ex_lsu_wb_wen  <= ex_lsu_wb_wen_nxt;
+        end
+        else begin
+            ex_lsu_valid   <= ex_lsu_valid;
+            ex_lsu_addr    <= ex_lsu_addr;
+            ex_lsu_data    <= ex_lsu_data;
+            ex_lsu_ctrl    <= ex_lsu_ctrl;
+            ex_lsu_size    <= ex_lsu_size;
+            ex_lsu_wb_data <= ex_lsu_wb_data;
+            ex_lsu_wb_rd   <= ex_lsu_wb_rd;
+            ex_lsu_wb_wen  <= ex_lsu_wb_wen;
+        end
     end
 
 endmodule

@@ -3,15 +3,15 @@
 
 # Project setting
 
-ROOT      := /home/host/Downloads/IC_Competition/core/src/IDU
+ROOT      := /home/host/Downloads/IC_Competition/core/src/IDU_RegFile_EXU_test
 OUT       := $(ROOT)/sim
 FLIST     := $(ROOT)/flist.f
 
 
 # Simulation setting
 
-TEST_NAME ?= IDU_smoketest
-FSDB_NAME ?= idu_pipe_tb
+TEST_NAME ?= idu_exu_regfile_smoketest
+FSDB_NAME ?= tb_idu_exu_regfile_top
 
 
 # VCS options
@@ -40,7 +40,7 @@ VCS_OPTS  += -l vcs.log
 VCS_OPTS  += -f $(FLIST)
 VCS_OPTS  += +incdir+$(ROOT)
 
-
+.PHONY: all comp sim clean
 all: comp sim
 
 
@@ -74,7 +74,7 @@ sim:
 # Open Verdi
 
 	#cd $(OUT) && verdi -ssf $(FSDB_NAME).fsdb -f $(FLIST) &
-	cd $(OUT) && verdi -f $(FLIST) -2001 -top tb_IDU_pipe  &
+	cd $(OUT) && verdi -f $(FLIST) -2001 -top tb_idu_exu_regfile_top  &
 
 
 # Clean
@@ -95,4 +95,3 @@ clean:
 		verdiLog \
 		urgReport
 
-.PHONY: all comp sim clean

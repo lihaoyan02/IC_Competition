@@ -84,7 +84,7 @@ module tb_IDU_pipe;
         .id_ex_rf_we       (id_ex_rf_we),
         .id_ex_lsu_en      (id_ex_lsu_en),
         .id_ex_lsu_we      (id_ex_lsu_we),
-        .lsu_ctrl          (lsu_ctrl),
+        .id_ex_alu_ctrl          (lsu_ctrl),
         .ebreak_flag       (ebreak_flag),
         .j_en              (j_en),
         .id_ex_J_cond      (id_ex_J_cond),
