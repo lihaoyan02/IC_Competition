@@ -1,0 +1,22 @@
+*design* DebussyLib (btIdent Verdi_T-2022.06)
+Command arguments:
+    +define+verilog
+    -f /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f
+        ../tb_IDU.sv
+        ../IDU(copy).v
+    -2001
+    -top
+    tb_IDU
+
+
+*Error* failed to open source file "../tb_IDU.sv" with read access: No such file or directory
+
+
+*Error* failed to open source file "../IDU(copy).v" with read access: No such file or directory
+
+Highest level modules:
+
+
+*Error* The wrong topmost entry (tb_IDU) of design was specified.
+
+Total	3 error(s),   0 warning(s)

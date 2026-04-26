@@ -1,0 +1,1874 @@
+*design* DebussyLib (btIdent Verdi_T-2022.06)
+Command arguments:
+    +define+verilog
+    -f /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f
+        ../tb_IDU_pipe.sv
+        ../IDU_pipe.v
+    -2001
+    -top
+    tb_IDU_pipe
+
+
+*Error* `include file "macro.v" cannot be read
+"../tb_IDU_pipe.sv", 2: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 6: 
+
+*Error* Syntax error at localparam
+"../tb_IDU_pipe.sv", 7: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 7: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 13: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 14: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 24: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 25: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 26: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 26: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 27: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 30: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 31: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 34: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 35: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 36: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 37: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 38: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 39: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 39: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 40: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 41: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 42: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 43: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 44: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 45: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 46: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 47: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 50: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 51: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 54: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 55: 
+
+*Error* Syntax error at [
+"../tb_IDU_pipe.sv", 56: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 103: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 114: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 126: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 135: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 146: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 157: 
+
+*Error* usage of bit filling is supported only if the option '-sv' is specified
+"../tb_IDU_pipe.sv", 172: 
+
+*Error* usage of bit filling is supported only if the option '-sv' is specified
+"../tb_IDU_pipe.sv", 174: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 189: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 190: 
+
+*Error* usage of bit filling is supported only if the option '-sv' is specified
+"../tb_IDU_pipe.sv", 207: 
+
+*Error* usage of bit filling is supported only if the option '-sv' is specified
+"../tb_IDU_pipe.sv", 209: 
+
+*Error* Syntax error at name
+"../tb_IDU_pipe.sv", 230: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 231: 
+
+*Error* macro `XLEN not defined
+"../tb_IDU_pipe.sv", 232: 
+
+*Error* Syntax error at name
+"../tb_IDU_pipe.sv", 245: 
+
+*Error* macro `F3_ADDI not defined
+"../tb_IDU_pipe.sv", 283: 
+
+*Error* macro `INST_TYPE_I not defined
+"../tb_IDU_pipe.sv", 283: 
+
+*Error* macro `ALU_ADD not defined
+"../tb_IDU_pipe.sv", 292: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../tb_IDU_pipe.sv", 293: 
+
+*Error* macro `F7_INST_A not defined
+"../tb_IDU_pipe.sv", 305: 
+
+*Error* macro `F3_ADD_SUB not defined
+"../tb_IDU_pipe.sv", 305: 
+
+*Error* macro `INST_TYPE_R not defined
+"../tb_IDU_pipe.sv", 305: 
+
+*Error* macro `ALU_ADD not defined
+"../tb_IDU_pipe.sv", 313: 
+
+*Error* macro `OP_RS1_RS2 not defined
+"../tb_IDU_pipe.sv", 314: 
+
+*Error* macro `F7_INST_B not defined
+"../tb_IDU_pipe.sv", 323: 
+
+*Error* macro `F3_ADD_SUB not defined
+"../tb_IDU_pipe.sv", 323: 
+
+*Error* macro `INST_TYPE_R not defined
+"../tb_IDU_pipe.sv", 323: 
+
+*Error* macro `ALU_SUB not defined
+"../tb_IDU_pipe.sv", 330: 
+
+*Error* macro `F3_LW not defined
+"../tb_IDU_pipe.sv", 338: 
+
+*Error* macro `INST_TYPE_IL not defined
+"../tb_IDU_pipe.sv", 338: 
+
+*Error* macro `ALU_ADD not defined
+"../tb_IDU_pipe.sv", 345: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../tb_IDU_pipe.sv", 346: 
+
+*Error* macro `F3_LW not defined
+"../tb_IDU_pipe.sv", 350: 
+
+*Error* macro `F3_SW not defined
+"../tb_IDU_pipe.sv", 358: 
+
+*Error* macro `INST_TYPE_S not defined
+"../tb_IDU_pipe.sv", 358: 
+
+*Error* macro `ALU_ADD not defined
+"../tb_IDU_pipe.sv", 365: 
+
+*Error* macro `F3_SW not defined
+"../tb_IDU_pipe.sv", 369: 
+
+*Error* macro `F3_BEQ not defined
+"../tb_IDU_pipe.sv", 377: 
+
+*Error* macro `INST_TYPE_B not defined
+"../tb_IDU_pipe.sv", 377: 
+
+*Error* macro `J_BEQ not defined
+"../tb_IDU_pipe.sv", 385: 
+
+*Error* macro `INST_JAL not defined
+"../tb_IDU_pipe.sv", 394: 
+
+*Error* macro `J_UNCOND not defined
+"../tb_IDU_pipe.sv", 401: 
+
+*Error* macro `J_UNCOND not defined
+"../tb_IDU_pipe.sv", 417: 
+
+*Error* `include file "macro.v" cannot be read
+"../IDU_pipe.v", 1: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 4: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 6: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 14: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 26: 
+
+*Error* macro `OPCODE_WIDTH not defined
+"../IDU_pipe.v", 55: 
+
+*Error* macro `FUNCT3_WIDTH not defined
+"../IDU_pipe.v", 56: 
+
+*Error* macro `FUNCT7_WIDTH not defined
+"../IDU_pipe.v", 57: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 285: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 292: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 293: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 307: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 90: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 91: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 313: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 314: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 325: 
+
+*Error* macro `ALU_IDLE not defined
+"../IDU_pipe.v", 107: 
+
+*Error* macro `OP_RS1_RS2 not defined
+"../IDU_pipe.v", 108: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 330: 
+
+*Error* macro `J_UNCOND not defined
+"../IDU_pipe.v", 115: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 340: 
+
+*Error* macro `INST_AUIPC not defined
+"../IDU_pipe.v", 122: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 123: 
+
+*Error* macro `OP_PC_IMM not defined
+"../IDU_pipe.v", 124: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 345: 
+
+*Error* macro `INST_LUI not defined
+"../IDU_pipe.v", 130: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 346: 
+
+*Error* macro `INST_TYPE_I not defined
+"../IDU_pipe.v", 136: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../IDU_pipe.v", 137: 
+
+*Error* macro `F3_ADDI not defined
+"../IDU_pipe.v", 142: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 143: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 350: 
+
+*Error* macro `F3_SLTIU not defined
+"../IDU_pipe.v", 145: 
+
+*Error* macro `ALU_LESS_U not defined
+"../IDU_pipe.v", 146: 
+
+*Error* macro `F3_XORI not defined
+"../IDU_pipe.v", 148: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 360: 
+
+*Error* macro `ALU_XOR not defined
+"../IDU_pipe.v", 149: 
+
+*Error* macro `F3_ORI not defined
+"../IDU_pipe.v", 151: 
+
+*Error* macro `ALU_OR not defined
+"../IDU_pipe.v", 152: 
+
+*Error* macro `F3_ANDI not defined
+"../IDU_pipe.v", 154: 
+
+*Error* macro `ALU_AND not defined
+"../IDU_pipe.v", 155: 
+
+*Error* macro `F3_SLTI not defined
+"../IDU_pipe.v", 157: 
+
+*Error* macro `ALU_LESS not defined
+"../IDU_pipe.v", 158: 
+
+*Error* macro `F3_SRLI_SRAI not defined
+"../IDU_pipe.v", 160: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 160: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 365: 
+
+*Error* macro `ALU_SHIFT_RIGHT_U not defined
+"../IDU_pipe.v", 161: 
+
+*Error* macro `F3_SRLI_SRAI not defined
+"../IDU_pipe.v", 163: 
+
+*Error* macro `F7_INST_B not defined
+"../IDU_pipe.v", 163: 
+
+*Error* macro `ALU_SHIFT_RIGHT not defined
+"../IDU_pipe.v", 164: 
+
+*Error* macro `F3_SLLI not defined
+"../IDU_pipe.v", 166: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 166: 
+
+*Error* macro `ALU_SHIFT_LEFT not defined
+"../IDU_pipe.v", 167: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 369: 
+
+*Error* macro `INST_TYPE_R not defined
+"../IDU_pipe.v", 176: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 379: 
+
+*Error* macro `OP_RS1_RS2 not defined
+"../IDU_pipe.v", 177: 
+
+*Error* macro `F3_ADD_SUB not defined
+"../IDU_pipe.v", 181: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 181: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 182: 
+
+*Error* macro `F3_ADD_SUB not defined
+"../IDU_pipe.v", 184: 
+
+*Error* macro `F7_INST_B not defined
+"../IDU_pipe.v", 184: 
+
+*Error* macro `ALU_SUB not defined
+"../IDU_pipe.v", 185: 
+
+*Error* macro `F3_XOR not defined
+"../IDU_pipe.v", 187: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 187: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 385: 
+
+*Error* macro `ALU_XOR not defined
+"../IDU_pipe.v", 188: 
+
+*Error* macro `F3_OR not defined
+"../IDU_pipe.v", 190: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 190: 
+
+*Error* macro `ALU_OR not defined
+"../IDU_pipe.v", 191: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 396: 
+
+*Error* macro `F3_AND not defined
+"../IDU_pipe.v", 193: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 193: 
+
+*Error* macro `ALU_AND not defined
+"../IDU_pipe.v", 194: 
+
+*Error* macro `F3_SRL_SRA not defined
+"../IDU_pipe.v", 196: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 196: 
+
+*Error* macro `ALU_SHIFT_RIGHT_U not defined
+"../IDU_pipe.v", 197: 
+
+*Error* macro `F3_SRL_SRA not defined
+"../IDU_pipe.v", 199: 
+
+*Error* macro `F7_INST_B not defined
+"../IDU_pipe.v", 199: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 401: 
+
+*Error* Syntax error at ;
+"../tb_IDU_pipe.sv", 417: 
+
+*Error* clk is referenced before declaration
+"../tb_IDU_pipe.sv", 16: 
+
+*Error* clk is referenced before declaration
+"../tb_IDU_pipe.sv", 17: 
+
+*Error* clk is referenced before declaration
+"../tb_IDU_pipe.sv", 17: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 171: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 172: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 173: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 174: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 175: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 176: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 181: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 193: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 194: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 195: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 196: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 197: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 207: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 208: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 209: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 219: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 225: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 16: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 282: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 292: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 293: 
+
+*Error* unmatch arguments in function enc_R
+"../tb_IDU_pipe.sv", 305: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 304: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 313: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 314: 
+
+*Error* unmatch arguments in function enc_R
+"../tb_IDU_pipe.sv", 323: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 322: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 330: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 337: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 345: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 346: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 350: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 357: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 365: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 369: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 376: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 385: 
+
+*Error* unmatch arguments in function enc_J
+"../tb_IDU_pipe.sv", 394: 
+
+*Error* mismatched task drive_inst arguments
+"../tb_IDU_pipe.sv", 393: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 401: 
+
+*Error* mismatched task check_equal arguments
+"../tb_IDU_pipe.sv", 417: 
+
+*Error* illegal LHS in procedural assignment
+"../tb_IDU_pipe.sv", 17: 
+
+*Error* Syntax error at parameter
+"../IDU_pipe.v", 5: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 108: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 116: 
+
+*Error* Syntax error at begin
+"../IDU_pipe.v", 122: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 124: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 138: 
+
+*Error* Syntax error at begin
+"../IDU_pipe.v", 142: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 144: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 145: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 147: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 148: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 149: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 150: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 151: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 152: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 153: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 154: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 155: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 156: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 157: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 158: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 159: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 160: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 161: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 162: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 163: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 164: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 165: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 166: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 167: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 168: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 169: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 173: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 174: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 177: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 178: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 179: 
+
+*Error* Syntax error at &&
+"../IDU_pipe.v", 181: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 182: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 183: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 184: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 185: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 186: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 187: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 188: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 189: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 190: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 191: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 192: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 193: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 194: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 195: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 196: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 197: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 198: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 199: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 200: 
+
+*Error* macro `ALU_SHIFT_RIGHT not defined
+"../IDU_pipe.v", 200: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 201: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 202: 
+
+*Error* macro `F3_SLT not defined
+"../IDU_pipe.v", 202: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 202: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 203: 
+
+*Error* macro `ALU_LESS not defined
+"../IDU_pipe.v", 203: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 204: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 205: 
+
+*Error* macro `F3_SLTU not defined
+"../IDU_pipe.v", 205: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 205: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 206: 
+
+*Error* macro `ALU_LESS_U not defined
+"../IDU_pipe.v", 206: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 207: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 208: 
+
+*Error* macro `F3_SLL not defined
+"../IDU_pipe.v", 208: 
+
+*Error* macro `F7_INST_A not defined
+"../IDU_pipe.v", 208: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 209: 
+
+*Error* macro `ALU_SHIFT_LEFT not defined
+"../IDU_pipe.v", 209: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 210: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 211: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 215: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 216: 
+
+*Error* macro `INST_JAL not defined
+"../IDU_pipe.v", 218: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 219: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 219: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 220: 
+
+*Error* macro `OP_PC_IMM not defined
+"../IDU_pipe.v", 220: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 221: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 222: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 223: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 224: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 225: 
+
+*Error* macro `INST_JALR not defined
+"../IDU_pipe.v", 227: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 229: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 229: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 230: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../IDU_pipe.v", 230: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 231: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 232: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 233: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 234: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 235: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 236: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 240: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 241: 
+
+*Error* macro `INST_TYPE_B not defined
+"../IDU_pipe.v", 243: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 244: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 244: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 245: 
+
+*Error* macro `OP_PC_IMM not defined
+"../IDU_pipe.v", 245: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 246: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 247: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 248: 
+
+*Error* macro `F3_BEQ not defined
+"../IDU_pipe.v", 250: 
+
+*Error* Syntax error at begin
+"../IDU_pipe.v", 250: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 251: 
+
+*Error* macro `J_BEQ not defined
+"../IDU_pipe.v", 251: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 252: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 253: 
+
+*Error* macro `F3_BNE not defined
+"../IDU_pipe.v", 253: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 254: 
+
+*Error* macro `J_BNE not defined
+"../IDU_pipe.v", 254: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 255: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 256: 
+
+*Error* macro `F3_BGEU not defined
+"../IDU_pipe.v", 256: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 257: 
+
+*Error* macro `J_BGE_U not defined
+"../IDU_pipe.v", 257: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 258: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 259: 
+
+*Error* macro `F3_BGE not defined
+"../IDU_pipe.v", 259: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 260: 
+
+*Error* macro `J_BGE not defined
+"../IDU_pipe.v", 260: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 261: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 262: 
+
+*Error* macro `F3_BLTU not defined
+"../IDU_pipe.v", 262: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 263: 
+
+*Error* macro `J_BLT_U not defined
+"../IDU_pipe.v", 263: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 264: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 265: 
+
+*Error* macro `F3_BLT not defined
+"../IDU_pipe.v", 265: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 266: 
+
+*Error* macro `J_BLT not defined
+"../IDU_pipe.v", 266: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 267: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 268: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 272: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 273: 
+
+*Error* macro `INST_TYPE_IL not defined
+"../IDU_pipe.v", 275: 
+
+*Error* macro `F3_LB not defined
+"../IDU_pipe.v", 277: 
+
+*Error* macro `F3_LH not defined
+"../IDU_pipe.v", 277: 
+
+*Error* macro `F3_LW not defined
+"../IDU_pipe.v", 277: 
+
+*Error* macro `F3_LBU not defined
+"../IDU_pipe.v", 277: 
+
+*Error* macro `F3_LHU not defined
+"../IDU_pipe.v", 277: 
+
+*Error* Syntax error at begin
+"../IDU_pipe.v", 277: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 278: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 278: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 279: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../IDU_pipe.v", 279: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 280: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 281: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 282: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 283: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 284: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 285: 
+
+*Error* Syntax error at default
+"../IDU_pipe.v", 286: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 290: 
+
+*Error* Syntax error at endcase
+"../IDU_pipe.v", 291: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 292: 
+
+*Error* macro `INST_TYPE_S not defined
+"../IDU_pipe.v", 294: 
+
+*Error* macro `F3_SB not defined
+"../IDU_pipe.v", 296: 
+
+*Error* macro `F3_SH not defined
+"../IDU_pipe.v", 296: 
+
+*Error* macro `F3_SW not defined
+"../IDU_pipe.v", 296: 
+
+*Error* Syntax error at begin
+"../IDU_pipe.v", 296: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 297: 
+
+*Error* macro `ALU_ADD not defined
+"../IDU_pipe.v", 297: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 298: 
+
+*Error* macro `OP_RS1_IMM not defined
+"../IDU_pipe.v", 298: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 299: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 300: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 301: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 302: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 303: 
+
+*Error* Syntax error at default
+"../IDU_pipe.v", 304: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 308: 
+
+*Error* Syntax error at endcase
+"../IDU_pipe.v", 309: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 310: 
+
+*Error* macro `INST_SYSTEM not defined
+"../IDU_pipe.v", 312: 
+
+*Error* macro `F3_EBREAK not defined
+"../IDU_pipe.v", 315: 
+
+*Error* Syntax error at &&
+"../IDU_pipe.v", 315: 
+
+*Error* Syntax error at (
+"../IDU_pipe.v", 316: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 317: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 318: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 319: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 320: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 321: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 322: 
+
+*Error* macro `ALU_OP2 not defined
+"../IDU_pipe.v", 322: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 323: 
+
+*Error* macro `OP_RS1_CSR not defined
+"../IDU_pipe.v", 323: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 324: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 325: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 326: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 327: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 328: 
+
+*Error* macro `ALU_OP2 not defined
+"../IDU_pipe.v", 328: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 329: 
+
+*Error* macro `OP_RS1_CSR not defined
+"../IDU_pipe.v", 329: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 330: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 331: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 332: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 333: 
+
+*Error* macro `ALU_OP2 not defined
+"../IDU_pipe.v", 333: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 334: 
+
+*Error* macro `OP_RS1_CSR not defined
+"../IDU_pipe.v", 334: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 335: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 336: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 337: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 338: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 339: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 340: 
+
+*Error* macro `ALU_OR not defined
+"../IDU_pipe.v", 340: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 341: 
+
+*Error* macro `OP_RS1_CSR not defined
+"../IDU_pipe.v", 341: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 342: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 343: 
+
+*Error* Syntax error at =
+"../IDU_pipe.v", 344: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 345: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 346: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 350: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 351: 
+
+*Error* Syntax error at default
+"../IDU_pipe.v", 353: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 357: 
+
+*Error* Syntax error at endcase
+"../IDU_pipe.v", 358: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 359: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 360: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 395: 
+
+*Error* Syntax error at ;
+"../IDU_pipe.v", 395: 
+
+*Error* macro `XLEN not defined
+"../IDU_pipe.v", 401: 
+
+*Error* Syntax error at ;
+"../IDU_pipe.v", 401: 
+
+*Error* macro `ALU_IDLE not defined
+"../IDU_pipe.v", 416: 
+
+*Error* macro `OP_RS1_RS2 not defined
+"../IDU_pipe.v", 417: 
+
+*Error* macro `ALU_IDLE not defined
+"../IDU_pipe.v", 422: 
+
+*Error* macro `OP_RS1_RS2 not defined
+"../IDU_pipe.v", 423: 
+
+*Error* macro `J_UNCOND not defined
+"../IDU_pipe.v", 456: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 457: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 458: 
+
+*Error* macro `J_UNCOND not defined
+"../IDU_pipe.v", 461: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 462: 
+
+*Error* Syntax error at else
+"../IDU_pipe.v", 463: 
+
+*Error* Syntax error at <=
+"../IDU_pipe.v", 464: 
+
+*Error* Syntax error at <=
+"../IDU_pipe.v", 465: 
+
+*Error* Syntax error at <=
+"../IDU_pipe.v", 466: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 467: 
+
+*Error* Syntax error at end
+"../IDU_pipe.v", 468: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 55: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 56: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 57: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 59: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 59: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 60: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 61: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 61: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 61: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 62: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 62: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 62: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 62: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 63: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 63: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 63: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 63: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 105: 
+
+*Error* if_id_instr is referenced before declaration
+"../IDU_pipe.v", 118: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 55: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 56: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 57: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 59: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 59: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 60: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 61: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 61: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 61: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 62: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 62: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 62: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 62: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 63: 
+
+*Warning* bit select in scalar
+"../IDU_pipe.v", 63: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 63: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 63: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 105: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 118: 
+
+*Error* missing condition in if statement
+"../IDU_pipe.v", 142: 
+
+*Error* missing then statement in if statement
+"../IDU_pipe.v", 142: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 379: 
+
+*Warning* partselect to scalar
+"../IDU_pipe.v", 380: 
+Highest level modules:
+tb_IDU_pipe
+
+
+*Error* failed to find identifier INST_WIDTH
+"../tb_IDU_pipe.sv", 62: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../tb_IDU_pipe.sv", 64: 
+
+*Error* failed to find port 'clk' for instance 'dut'
+"../tb_IDU_pipe.sv", 66: 
+
+*Error* failed to find port 'rst' for instance 'dut'
+"../tb_IDU_pipe.sv", 67: 
+
+*Error* failed to find port 'if_id_instr' for instance 'dut'
+"../tb_IDU_pipe.sv", 69: 
+
+*Error* failed to find port 'if_id_instr_valid' for instance 'dut'
+"../tb_IDU_pipe.sv", 70: 
+
+*Error* failed to find port 'if_id_pc' for instance 'dut'
+"../tb_IDU_pipe.sv", 71: 
+
+*Error* failed to find port 'id_if_instr_ready' for instance 'dut'
+"../tb_IDU_pipe.sv", 72: 
+
+*Error* failed to find port 'ex_id_ready' for instance 'dut'
+"../tb_IDU_pipe.sv", 74: 
+
+*Error* failed to find port 'ex_glb_flush' for instance 'dut'
+"../tb_IDU_pipe.sv", 75: 
+
+*Error* failed to find port 'id_ex_valid' for instance 'dut'
+"../tb_IDU_pipe.sv", 77: 
+
+*Error* failed to find port 'id_ex_imm' for instance 'dut'
+"../tb_IDU_pipe.sv", 78: 
+
+*Error* failed to find port 'id_ex_rd' for instance 'dut'
+"../tb_IDU_pipe.sv", 79: 
+
+*Error* failed to find port 'id_ex_alu_ctrl' for instance 'dut'
+"../tb_IDU_pipe.sv", 80: 
+
+*Error* failed to find port 'alu_op_ctrl' for instance 'dut'
+"../tb_IDU_pipe.sv", 81: 
+
+*Error* failed to find port 'id_ex_pc' for instance 'dut'
+"../tb_IDU_pipe.sv", 82: 
+
+*Error* failed to find port 'wb_ctrl' for instance 'dut'
+"../tb_IDU_pipe.sv", 83: 
+
+*Error* failed to find port 'id_ex_rf_we' for instance 'dut'
+"../tb_IDU_pipe.sv", 84: 
+
+*Error* failed to find port 'id_ex_lsu_en' for instance 'dut'
+"../tb_IDU_pipe.sv", 85: 
+
+*Error* failed to find port 'id_ex_lsu_we' for instance 'dut'
+"../tb_IDU_pipe.sv", 86: 
+
+*Error* failed to find port 'lsu_ctrl' for instance 'dut'
+"../tb_IDU_pipe.sv", 87: 
+
+*Error* failed to find port 'ebreak_flag' for instance 'dut'
+"../tb_IDU_pipe.sv", 88: 
+
+*Error* failed to find port 'j_en' for instance 'dut'
+"../tb_IDU_pipe.sv", 89: 
+
+*Error* failed to find port 'id_ex_J_cond' for instance 'dut'
+"../tb_IDU_pipe.sv", 90: 
+
+*Error* failed to find port 'id_rf_rs1_addr' for instance 'dut'
+"../tb_IDU_pipe.sv", 92: 
+
+*Error* failed to find port 'id_rf_rs2_addr' for instance 'dut'
+"../tb_IDU_pipe.sv", 93: 
+
+*Error* failed to find port 'csr_wen' for instance 'dut'
+"../tb_IDU_pipe.sv", 95: 
+
+*Error* failed to find port 'csr_event' for instance 'dut'
+"../tb_IDU_pipe.sv", 96: 
+
+*Error* failed to find port 'csr_addr' for instance 'dut'
+"../tb_IDU_pipe.sv", 97: 
+
+*Warning* Failed to find the specified instance parameter INST_WIDTH in the master IDU
+"../tb_IDU_pipe.sv", 65: 
+
+*Warning* Failed to find the specified instance parameter REGADDR_WIDTH in the master IDU
+"../tb_IDU_pipe.sv", 65: 
+
+*Warning* Failed to find the specified instance parameter DATA_WIDTH in the master IDU
+"../tb_IDU_pipe.sv", 65: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 59: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 60: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 61: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 62: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 63: 
+
+*Error* failed to find identifier ex_id_ready
+"../IDU_pipe.v", 68: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 73: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 106: 
+
+*Error* failed to find identifier if_id_instr_valid
+"../IDU_pipe.v", 120: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 313: 
+
+*Error* failed to find identifier id_rf_rs1_addr
+"../IDU_pipe.v", 314: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 369: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 370: 
+
+*Error* failed to find identifier id_rf_rs1_addr
+"../IDU_pipe.v", 371: 
+
+*Error* failed to find identifier id_rf_rs2_addr
+"../IDU_pipe.v", 372: 
+
+*Error* failed to find identifier ex_glb_flush
+"../IDU_pipe.v", 374: 
+
+*Error* failed to find identifier id_rf_rs1_addr
+"../IDU_pipe.v", 375: 
+
+*Error* failed to find identifier id_rf_rs2_addr
+"../IDU_pipe.v", 376: 
+
+*Error* failed to find identifier id_rf_rs1_addr
+"../IDU_pipe.v", 379: 
+
+*Error* failed to find identifier id_rf_rs2_addr
+"../IDU_pipe.v", 380: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 392: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 393: 
+
+*Error* failed to find identifier id_ex_valid
+"../IDU_pipe.v", 394: 
+
+*Error* failed to find identifier id_ex_pc
+"../IDU_pipe.v", 395: 
+
+*Error* failed to find identifier id_ex_imm
+"../IDU_pipe.v", 396: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 396: 
+
+*Error* failed to find identifier id_ex_rd
+"../IDU_pipe.v", 397: 
+
+*Error* failed to find identifier ex_glb_flush
+"../IDU_pipe.v", 399: 
+
+*Error* failed to find identifier id_ex_valid
+"../IDU_pipe.v", 400: 
+
+*Error* failed to find identifier id_ex_pc
+"../IDU_pipe.v", 401: 
+
+*Error* failed to find identifier id_ex_imm
+"../IDU_pipe.v", 402: 
+
+*Error* failed to find identifier DATA_WIDTH
+"../IDU_pipe.v", 402: 
+
+*Error* failed to find identifier id_ex_rd
+"../IDU_pipe.v", 403: 
+
+*Error* failed to find identifier id_ex_valid
+"../IDU_pipe.v", 406: 
+
+*Error* failed to find identifier ex_id_ready
+"../IDU_pipe.v", 406: 
+
+*Error* failed to find identifier if_id_instr_valid
+"../IDU_pipe.v", 406: 
+
+*Error* failed to find identifier id_ex_pc
+"../IDU_pipe.v", 407: 
+
+*Error* failed to find identifier id_ex_imm
+"../IDU_pipe.v", 408: 
+
+*Error* failed to find identifier id_ex_rd
+"../IDU_pipe.v", 409: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 414: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 415: 
+
+*Error* failed to find identifier id_ex_alu_ctrl
+"../IDU_pipe.v", 416: 
+
+*Error* failed to find identifier alu_op_ctrl
+"../IDU_pipe.v", 417: 
+
+*Error* failed to find identifier wb_ctrl
+"../IDU_pipe.v", 418: 
+
+*Error* failed to find identifier id_ex_rf_we
+"../IDU_pipe.v", 419: 
+
+*Error* failed to find identifier ex_glb_flush
+"../IDU_pipe.v", 421: 
+
+*Error* failed to find identifier id_ex_alu_ctrl
+"../IDU_pipe.v", 422: 
+
+*Error* failed to find identifier alu_op_ctrl
+"../IDU_pipe.v", 423: 
+
+*Error* failed to find identifier wb_ctrl
+"../IDU_pipe.v", 424: 
+
+*Error* failed to find identifier id_ex_rf_we
+"../IDU_pipe.v", 425: 
+
+*Error* failed to find identifier id_ex_alu_ctrl
+"../IDU_pipe.v", 428: 
+
+*Error* failed to find identifier alu_op_ctrl
+"../IDU_pipe.v", 429: 
+
+*Error* failed to find identifier wb_ctrl
+"../IDU_pipe.v", 430: 
+
+*Error* failed to find identifier id_ex_rf_we
+"../IDU_pipe.v", 431: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 436: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 437: 
+
+*Error* failed to find identifier id_ex_lsu_en
+"../IDU_pipe.v", 438: 
+
+*Error* failed to find identifier id_ex_lsu_we
+"../IDU_pipe.v", 439: 
+
+*Error* failed to find identifier ex_glb_flush
+"../IDU_pipe.v", 441: 
+
+*Error* failed to find identifier id_ex_lsu_en
+"../IDU_pipe.v", 442: 
+
+*Error* failed to find identifier id_ex_lsu_we
+"../IDU_pipe.v", 443: 
+
+*Error* failed to find identifier id_ex_lsu_en
+"../IDU_pipe.v", 446: 
+
+*Error* failed to find identifier id_ex_lsu_we
+"../IDU_pipe.v", 447: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 452: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 453: 
+
+*Error* failed to find identifier ebreak_flag
+"../IDU_pipe.v", 454: 
+
+*Error* failed to find identifier j_en
+"../IDU_pipe.v", 455: 
+
+*Error* failed to find identifier id_ex_J_cond
+"../IDU_pipe.v", 456: 
+
+*Error* failed to find identifier ebreak_flag
+"../IDU_pipe.v", 459: 
+
+*Error* failed to find identifier j_en
+"../IDU_pipe.v", 460: 
+
+*Error* failed to find identifier id_ex_J_cond
+"../IDU_pipe.v", 461: 
+
+*Error* failed to find identifier clk
+"../IDU_pipe.v", 471: 
+
+*Error* failed to find identifier rst
+"../IDU_pipe.v", 472: 
+
+*Error* failed to find identifier csr_wen
+"../IDU_pipe.v", 473: 
+
+*Error* failed to find identifier csr_event
+"../IDU_pipe.v", 474: 
+
+*Error* failed to find identifier csr_addr
+"../IDU_pipe.v", 475: 
+
+*Error* failed to find identifier ex_glb_flush
+"../IDU_pipe.v", 477: 
+
+*Error* failed to find identifier csr_wen
+"../IDU_pipe.v", 478: 
+
+*Error* failed to find identifier csr_event
+"../IDU_pipe.v", 479: 
+
+*Error* failed to find identifier csr_addr
+"../IDU_pipe.v", 480: 
+
+*Error* failed to find identifier csr_wen
+"../IDU_pipe.v", 483: 
+
+*Error* failed to find identifier csr_event
+"../IDU_pipe.v", 484: 
+
+*Error* failed to find identifier csr_addr
+"../IDU_pipe.v", 485: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_0
+"../IDU_pipe.v", 171: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_1
+"../IDU_pipe.v", 213: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_2
+"../IDU_pipe.v", 238: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_3
+"../IDU_pipe.v", 270: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_4
+"../IDU_pipe.v", 288: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_5
+"../IDU_pipe.v", 306: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_6
+"../IDU_pipe.v", 348: 
+
+*Error* view unknown_inst is not defined for instance unknown_inst_7
+"../IDU_pipe.v", 355: 
+Total	596 error(s),   24 warning(s)

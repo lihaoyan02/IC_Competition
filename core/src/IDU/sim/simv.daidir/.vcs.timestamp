@@ -1,0 +1,169 @@
+2        
+0 macro.v
+0 /usr/Synopsys/vcs/T-2022.06/etc/systemverilog/macro.v
+51
++error+10
++incdir+/home/host/Downloads/IC_Competiton_JJ/core/src/IDU
++itf+/usr/Synopsys/vcs/T-2022.06/linux64/lib/vcsdp_lite.tab
++memcbk
++neg_tchk
++nospecify
++ntb_exit_on_error=10
++plusarg_save
++sdfverbose
++v2k
++vcsd
++vcsd1
++vpi
++vpi
++warn=all
++warn=noTFIPC
++warn=noWSUM
+-Mamsrun=
+-Masflags=
+-Mcc=gcc
+-Mcfl= -pipe -fPIC -O -I/usr/Synopsys/vcs/T-2022.06/include
+-Mcplusplus=g++
+-Mcrt0=
+-Mcrtn=
+-Mcsrc=
+-Mexternalobj=
+-Mldflags= -rdynamic
+-Mobjects= /usr/Synopsys/vcs/T-2022.06/linux64/lib/libvirsim.so /usr/Synopsys/vcs/T-2022.06/linux64/lib/liberrorinf.so /usr/Synopsys/vcs/T-2022.06/linux64/lib/libsnpsmalloc.so /usr/Synopsys/vcs/T-2022.06/linux64/lib/libvfs.so
+-Mout=simv
+-Msaverestoreobj=/usr/Synopsys/vcs/T-2022.06/linux64/lib/vcs_save_restore_new.o
+-Msyslibs=/usr/Synopsys/verdi/T-2022.06/share/PLI/VCS/LINUX64/pli.a -ldl
+-Mupdate
+-Mvcsaceobjs=
+-Mxcflags= -pipe -fPIC -I/usr/Synopsys/vcs/T-2022.06/include
+-Mxllcflags=
+-P
+-debug_access+all
+-f /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f
+-fsdb
+-full64
+-gen_obj
+-l
+-line
+-negdelay
+-picarchive
+-sverilog
+-timescale=1ns/100ps
+/usr/Synopsys/vcs/T-2022.06/linux64/bin/vcs1
+vcs.log
+/usr/Synopsys/verdi/T-2022.06/share/PLI/VCS/LINUX64/verdi.tab
+/home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f
+97
+redhawk_HOME=/usr/Ansys/redhawk/RedHawk_Linux64e6_V2020R2.1
+novas_args=-P ${NOVAS}/novas.tab ${NOVAS}/pli.a
+XMODIFIERS=@im=ibus
+XDG_VTNR=1
+XDG_SESSION_TYPE=x11
+XDG_SESSION_ID=1
+XDG_SESSION_DESKTOP=gnome-classic
+XDG_SEAT=seat0
+XDG_RUNTIME_DIR=/run/user/1001
+XDG_MENU_PREFIX=gnome-
+XDG_DATA_DIRS=/home/host/.local/share/flatpak/exports/share/:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/
+XDG_CURRENT_DESKTOP=GNOME-Classic:GNOME
+XAUTHORITY=/run/gdm/auth-for-host-AL1Aye/database
+WINDOWPATH=1
+Virtuoso_HOME=/usr/Cadence/IC618
+VTE_VERSION=5204
+VMR_MODE_FLAG=64
+VERDI_HOME=/usr/Synopsys/verdi/T-2022.06
+VC_STATIC_HOME=/usr/Synopsys/vc_static/T-2022.06-SP2
+VCS_PATHMAP_PRELOAD_DONE=1
+VCS_MX_HOME_INTERNAL=1
+VCS_MODE_FLAG=64
+VCS_LOG_FILE=vcs.log
+VCS_HOME=/usr/Synopsys/vcs/T-2022.06
+VCS_EXEC_DONE=1
+VCS_DEPTH=0
+VCS_ARG_ADDED_FOR_TMP=1
+VCS_ARCH_OVERRIDE=linux
+VCS_ARCH=linux64
+USERNAME=host
+UNAME=/bin/uname
+TXS_HOME=/usr/Synopsys/txs/R-2020.09-SP3
+TOOL_HOME=/usr/Synopsys/vcs/T-2022.06/linux64
+TLDR_ALLOW_INSECURE=1
+TESTMAX_MAX=/usr/Synopsys/testmax/S-2021.06-SP5
+TESSENT_HOME=/usr/Mentor/tessent
+STARRC_HOME=/usr/Synopsys/starrc/T-2022.03-SP2
+SSH_AUTH_SOCK=/run/user/1001/keyring/ssh
+SSH_AGENT_PID=3230
+SPYGLASS_HOME=/usr/Synopsys/spyglass/T-2022.06-1/SPYGLASS_HOME
+SPYGLASS_DC_PATH=/usr/Synopsys/syn/T-2022.03-SP2
+SNPS_VCS_CLANG_PATH=/usr/Synopsys/vcs/T-2022.06/linux64/clang
+SNPS_INTERNAL_VCS_LINUX_OS=linux
+SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/3086,unix/unix:/tmp/.ICE-unix/3086
+SCRNAME=vcs
+SCRIPT_NAME=vcs
+SCL_HOME=/usr/Synopsys/scl/2021.03
+QT_IM_MODULE=ibus
+QT_GRAPHICSSYSTEM_CHECKED=1
+QTLIB=/usr/lib64/qt-3.3/lib
+QTINC=/usr/lib64/qt-3.3/include
+QTDIR=/usr/lib64/qt-3.3
+PYTHONHTTPSVERIFY=0
+PT_HOME=/usr/Synopsys/prime/T-2022.03
+OVA_UUM=0
+OA_PLUGIN_PATH=/usr/Cadence/IC618/oa_v22.60.007/data/plugins
+OA_HOME=/usr/Cadence/IC618/oa_v22.60.007
+NOVAS=/usr/Synopsys/verdi/T-2022.06/share/PLI/VCS/LINUX64
+MGLS_LICENSE_FILE=/usr/Mentor/license/license.dat
+MGC_LIB_PATH=/usr/Mentor/calibre/aoi_cal_2022.4_28.13/lib
+MGC_HOME=/usr/Mentor/calibre/aoi_cal_2022.4_28.13
+MGC_FDI_OA_VERSION=22.60
+MFLAGS=
+MAKE_TERMOUT=/dev/pts/1
+MAKE_TERMERR=/dev/pts/1
+MAKELEVEL=1
+MAKEFLAGS=
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LC_HOME=/usr/Synopsys/lc/T-2022.03
+LC_ALL=C
+INN_HOME=/usr/Cadence/INNOVUS201
+IMSETTINGS_MODULE=none
+IMSETTINGS_INTEGRATE_DESKTOP=yes
+ICC_HOME=/usr/Synopsys/icc/T-2022.03
+ICC2_HOME=/usr/Synopsys/icc2/T-2022.03
+HISTCONTROL=ignoredups
+GNOME_TERMINAL_SERVICE=:1.103
+GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/eea61812_1a71_4b13_a0ba_d621743a688b
+GNOME_SHELL_SESSION_MODE=classic
+GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+GDM_LANG=en_US.UTF-8
+GDMSESSION=gnome-classic
+FM_HOME=/usr/Synopsys/fm/T-2022.03
+DESKTOP_SESSION=gnome-classic
+DESIGNWARE_HOME=/home/autumn/Desktop/IP
+DC_HOME=/usr/Synopsys/syn/T-2022.03-SP2
+DBUS_STARTER_BUS_TYPE=session
+DBUS_STARTER_ADDRESS=unix:abstract=/tmp/dbus-l9XJgSNXop,guid=45a8cb01211c74507138b36c69eca3c3
+DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-l9XJgSNXop,guid=45a8cb01211c74507138b36c69eca3c3
+CONFRML_HOME=/usr/Cadence/CONFRML222
+COLORTERM=truecolor
+CDS_Netlisting_Mode=Analog
+CDS_LOAD_ENV=CSF
+CDS_LIC_FILE=/usr/Cadence/license/cadence.dat
+CDS_AUTO_64BIT=ALL
+CALIBRE_HOME=/usr/Mentor/calibre/aoi_cal_2022.4_28.13
+APACHEDA_LICENSE_FILE=/usr/Ansys/license/apacheda.lic
+0
+0
+6
+1777122909 /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/macro.v
+1777195123 ../IDU_pipe.v
+1777198815 ../tb_IDU_pipe.sv
+1777197395 /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f
+1653825972 /usr/Synopsys/verdi/T-2022.06/share/PLI/VCS/LINUX64/verdi.tab
+1654052745 /usr/Synopsys/vcs/T-2022.06/linux64/lib/vcsdp_lite.tab
+4
+1654054205 /usr/Synopsys/vcs/T-2022.06/linux64/lib/libvirsim.so
+1654053585 /usr/Synopsys/vcs/T-2022.06/linux64/lib/liberrorinf.so
+1654053489 /usr/Synopsys/vcs/T-2022.06/linux64/lib/libsnpsmalloc.so
+1654053565 /usr/Synopsys/vcs/T-2022.06/linux64/lib/libvfs.so
+1777198848 simv.daidir
+-1 partitionlib

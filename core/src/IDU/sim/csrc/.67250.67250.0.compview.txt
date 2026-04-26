@@ -1,0 +1,9 @@
+{"vcs1":{"timestamp_begin":1777198845.240320116, "rt":1.84, "ut":0.10, "st":0.07}}
+{"vcselab":{"timestamp_begin":1777198847.110841620, "rt":1.38, "ut":0.09, "st":0.05}}
+{"link":{"timestamp_begin":1777198848.520303000, "rt":0.08, "ut":0.04, "st":0.04}}
+{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1777198844.918833104}
+{"VCS_COMP_START_TIME": 1777198844.918833104}
+{"VCS_COMP_END_TIME": 1777198848.641986959}
+{"VCS_USER_OPTIONS": "-full64 -sverilog -debug_access+all -line +vcsd +vpi +plusarg_save -Mupdate +error+10 +v2k +ntb_exit_on_error=10 -timescale=1ns/100ps -negdelay +neg_tchk +memcbk +sdfverbose +warn=all +warn=noTFIPC +warn=noWSUM +nospecify -l vcs.log -f /home/host/Downloads/IC_Competiton_JJ/core/src/IDU/flist.f +incdir+/home/host/Downloads/IC_Competiton_JJ/core/src/IDU"}
+{"vcs1": {"peak_mem": 511608}}
+{"stitch_vcselab": {"peak_mem": 366236}}
