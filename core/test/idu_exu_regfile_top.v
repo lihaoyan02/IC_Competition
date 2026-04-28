@@ -9,6 +9,7 @@ module idu_exu_regfile_top (
     input              if_id_instr_valid,
     input  [`XLEN-1:0] if_id_pc,
     output             id_if_instr_ready,
+    output             id_glb_stall,
 
     // Simple external write port to Regfile (for TB preload / writeback emulation)
     input              tb_rf_we,
@@ -38,32 +39,32 @@ module idu_exu_regfile_top (
     //========================================================
     // Internal wires: IDU <-> Regfile
     //========================================================
-    wire [4:0]         id_rf_rs1_addr;
-    wire [4:0]         id_rf_rs2_addr;
-    wire [`XLEN-1:0]   rf_id_rs1_data;
-    wire [`XLEN-1:0]   rf_id_rs2_data;
+    wire [4:0]       id_rf_rs1_addr;
+    wire [4:0]       id_rf_rs2_addr;
+    wire [`XLEN-1:0] rf_id_rs1_data;
+    wire [`XLEN-1:0] rf_id_rs2_data;
 
     //========================================================
     // Internal wires: IDU -> EXU
     //========================================================
-    wire               ex_id_ready;
+    wire             ex_id_ready;
 
-    wire               id_ex_valid;
-    wire [`XLEN-1:0]   id_ex_imm;
-    wire [`XLEN-1:0]   id_ex_rs1_data;
-    wire [`XLEN-1:0]   id_ex_rs2_data;
-    wire [4:0]         id_ex_rd;
-    wire [3:0]         id_ex_alu_ctrl;
-    wire [1:0]         alu_op_ctrl;
-    wire [`XLEN-1:0]   id_ex_pc;
-    wire [2:0]         wb_ctrl;
-    wire               id_ex_rf_we;
-    wire               id_ex_lsu_en;
-    wire               id_ex_lsu_we;
-    wire [2:0]         id_ex_lsu_ctrl;
-    wire               ebreak_flag;
-    wire               j_en;
-    wire [2:0]         id_ex_J_cond;
+    wire             id_ex_valid;
+    wire [`XLEN-1:0] id_ex_imm;
+    wire [`XLEN-1:0] id_ex_rs1_data;
+    wire [`XLEN-1:0] id_ex_rs2_data;
+    wire [4:0]       id_ex_rd;
+    wire [3:0]       id_ex_alu_ctrl;
+    wire [1:0]       alu_op_ctrl;
+    wire [`XLEN-1:0] id_ex_pc;
+    wire [2:0]       wb_ctrl;
+    wire             id_ex_rf_we;
+    wire             id_ex_lsu_en;
+    wire             id_ex_lsu_we;
+    wire [2:0]       id_ex_lsu_ctrl;
+    wire             ebreak_flag;
+    wire             j_en;
+    wire [2:0]       id_ex_J_cond;
 
     //========================================================
     // IDU
@@ -79,6 +80,11 @@ module idu_exu_regfile_top (
 
         .ex_id_ready       (ex_id_ready),
         .ex_glb_flush      (ex_glb_flush),
+
+        .ex_lsu_valid      (ex_lsu_valid),
+        .ex_lsu_wb_wen     (ex_lsu_wb_wen),
+        .ex_lsu_wb_rd      (ex_lsu_wb_rd),
+        .ex_lsu_ctrl       (ex_lsu_ctrl),
 
         .id_ex_valid       (id_ex_valid),
         .id_ex_imm         (id_ex_imm),
@@ -102,9 +108,11 @@ module idu_exu_regfile_top (
         .id_rf_rs1_addr    (id_rf_rs1_addr),
         .id_rf_rs2_addr    (id_rf_rs2_addr),
 
-        .csr_wen           (),          // not used in this top TB
-        .csr_event         (),          // not used in this top TB
-        .csr_addr          ()           // not used in this top TB
+        .csr_wen           (),
+        .csr_event         (),
+        .csr_addr          (),
+
+        .id_glb_stall      (id_glb_stall)
     );
 
     //========================================================

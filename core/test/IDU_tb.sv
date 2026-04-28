@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 `include "macro.v"
 
-module tb_IDU;
+module IDU_tb;
 
     localparam INST_WIDTH    = `XLEN;
     localparam DATA_WIDTH    = `XLEN;
@@ -281,10 +281,17 @@ module tb_IDU;
     //============================================================
 // Test sequence
 //============================================================
-initial begin
+/*initial begin
     $fsdbDumpfile("idu_tb.fsdb");
     $fsdbDumpvars(0, tb_IDU);
 end
+*/
+
+ // Waveform dumping
+    initial begin
+        $dumpfile("build/waveform.vcd");   // 指定波形文件名
+        $dumpvars(0, IDU_tb);     // 转储所有层级信号（0 表示所有层级）
+    end
 
 initial begin
     $display("==================================================");
