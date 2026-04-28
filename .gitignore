@@ -1,1 +1,5 @@
 build/
+/core/src/IDU/sim/
+/core/src/IDU_RegFile_EXU_test/sim/
+core/src/IDU_RegFile_EXU_test/sim/
+core/src/IDU_RegFile_EXU_test/sim/
