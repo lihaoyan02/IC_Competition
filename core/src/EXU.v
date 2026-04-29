@@ -201,9 +201,9 @@ module EXU #(
             ex_lsu_ctrl_nxt = 2'b01;
 
         case (id_ex_lsu_ctrl)
-            `F3_LB, `F3_LBU, `F3_SB: ex_lsu_size_nxt = 2'b00;
-            `F3_LH, `F3_LHU, `F3_SH: ex_lsu_size_nxt = 2'b01;
-            `F3_LW,           `F3_SW: ex_lsu_size_nxt = 2'b10;
+            `F3_LB, `F3_LBU: ex_lsu_size_nxt = 2'b00;
+            `F3_LH, `F3_LHU: ex_lsu_size_nxt = 2'b01;
+            `F3_LW        : ex_lsu_size_nxt = 2'b10;
             default                  : ex_lsu_size_nxt = 2'b10;
         endcase
     end
