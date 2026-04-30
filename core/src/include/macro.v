@@ -128,3 +128,8 @@
 `define ALU_SRC_4       `ALU_SRC_WIDTH'b101 // 4
 `define ALU_SRC_0       `ALU_SRC_WIDTH'b110 // 0
 
+ `define WB_IDLE  3'b000
+ `define WB_ALU  3'b001
+ `define WB_PC   3'b010
+ `define WB_IMM  3'b011
+ `define WB_MEM  3'b100

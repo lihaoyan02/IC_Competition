@@ -1,4 +1,5 @@
 # Makefile for RISC-V 32I IC Competition
+#CROSS_COMPILE ?= riscv64-unknown-linux-gnu-  #For JJ
 CROSS_COMPILE ?= riscv64-linux-gnu-
 # CROSS_COMPILE ?= riscv32-unknown-elf-
 CC = $(CROSS_COMPILE)gcc

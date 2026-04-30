@@ -186,27 +186,34 @@ module EXU #(
     // Next EX/LSU payload generation
     //========================================================
     always @(*) begin
-        ex_lsu_valid_nxt   = id_ex_valid;
-        ex_lsu_addr_nxt    = alu_out;
-        ex_lsu_data_nxt    = id_ex_rs2_data;
-        ex_lsu_wb_data_nxt = alu_out;
-        ex_lsu_wb_rd_nxt   = id_ex_rd;
-        ex_lsu_wb_wen_nxt  = id_ex_rf_we;
+    ex_lsu_valid_nxt  = id_ex_valid;
+    ex_lsu_addr_nxt   = alu_out;
+    ex_lsu_data_nxt   = id_ex_rs2_data;
+    ex_lsu_wb_rd_nxt  = id_ex_rd;
+    ex_lsu_wb_wen_nxt = id_ex_rf_we;
 
-        if (!id_ex_lsu_en)
-            ex_lsu_ctrl_nxt = 2'b00;
-        else if (id_ex_lsu_we)
-            ex_lsu_ctrl_nxt = 2'b10;
-        else
-            ex_lsu_ctrl_nxt = 2'b01;
+    if (!id_ex_lsu_en)
+        ex_lsu_ctrl_nxt = 2'b00;
+    else if (id_ex_lsu_we)
+        ex_lsu_ctrl_nxt = 2'b10;
+    else
+        ex_lsu_ctrl_nxt = 2'b01;
 
-        case (id_ex_lsu_ctrl)
-            `F3_LB, `F3_LBU, `F3_SB: ex_lsu_size_nxt = 2'b00;
-            `F3_LH, `F3_LHU, `F3_SH: ex_lsu_size_nxt = 2'b01;
-            `F3_LW,           `F3_SW: ex_lsu_size_nxt = 2'b10;
-            default                  : ex_lsu_size_nxt = 2'b10;
-        endcase
-    end
+    case (id_ex_lsu_ctrl)
+        `F3_LB, `F3_LBU: ex_lsu_size_nxt = 2'b00;
+        `F3_LH, `F3_LHU: ex_lsu_size_nxt = 2'b01;
+        `F3_LW         : ex_lsu_size_nxt = 2'b10;
+        default        : ex_lsu_size_nxt = 2'b10;
+    endcase
+
+    case (wb_ctrl)
+        `WB_PC  : ex_lsu_wb_data_nxt = id_ex_pc + 32'd4; // JAL / JALR
+        `WB_IMM : ex_lsu_wb_data_nxt = id_ex_imm;        // LUI
+        `WB_ALU : ex_lsu_wb_data_nxt = alu_out;          // ALU / AUIPC
+        `WB_MEM : ex_lsu_wb_data_nxt = alu_out;          // 
+        default: ex_lsu_wb_data_nxt = alu_out;
+    endcase
+end
 
 //***********************************************************//
 //                                                           //
