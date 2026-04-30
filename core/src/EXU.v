@@ -234,7 +234,7 @@ end
             ex_lsu_wb_wen  <= 1'b0;
         end
         else if (lsu_ex_ready) begin
-            // 下一级 ready，才能推进
+            
             ex_lsu_valid   <= ex_lsu_valid_nxt;
             ex_lsu_addr    <= ex_lsu_addr_nxt;
             ex_lsu_data    <= ex_lsu_data_nxt;

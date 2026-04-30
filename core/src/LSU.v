@@ -49,7 +49,7 @@ module LSU (
     
     // Connect cache interface
     assign lsu_cache_valid = (lsu_state == WAITING) || (ex_lsu_valid && (ex_lsu_ctrl != 2'b00));
-    assign lsu_ex_ready = (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl == 2'b00)) || 
+    assign lsu_ex_ready = (lsu_state == IDLE && (ex_lsu_ctrl == 2'b00)) || 
         (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl != 2'b00) && cache_lsu_hit) ||
         (lsu_state == WAITING && cache_lsu_hit);
     assign lsu_cache_addr = (lsu_state == WAITING) ? pending_addr : ex_lsu_addr;

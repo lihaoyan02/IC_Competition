@@ -7,8 +7,8 @@ else ifeq ($(ALL),LSU)
 	TEST_TOPNAME = LSU_tb
 	DUT_SRC = src/LSU.v src/L1_cache.v
 else
-	TEST_TOPNAME = LSU_tb
-	DUT_SRC = src/LSU.v src/L1_cache.v
+	TEST_TOPNAME = top_tb
+	DUT_SRC = $(VSRC)
 endif
 
 VSRC=$(wildcard src/*.v)
@@ -52,7 +52,7 @@ $(TEST_BIN): $(TB_SRC) $(DUT_SRC)
 	@echo "=========================================="
 	@$(VERILATOR) $(VERILATOR_TEST_FLAGS) \
 			-I$(INCLUDE_DIRS) \
-			-DIMG_PATH="\"../build/add.bin\"" \
+			-DIMG_PATH="\"../build/dummy.bin\"" \
 			--top-module $(TEST_TOPNAME) $^ \
 			--Mdir $(TEST_OBJ_DIR) -o $(abspath $(TEST_BIN))
 
