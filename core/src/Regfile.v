@@ -33,7 +33,7 @@ module Regfile (
     
     // Asynchronous read
     //assign rs1_data = (rs1_addr == 5'b0) ? {`XLEN{1'b0}} : regs[rs1_addr];
-   // assign rs2_data = (rs2_addr == 5'b0) ? {`XLEN{1'b0}} : regs[rs2_addr];
+    //assign rs2_data = (rs2_addr == 5'b0) ? {`XLEN{1'b0}} : regs[rs2_addr];
 
 
     assign rs1_data = (rs1_addr == 5'b0) ? {`XLEN{1'b0}} :

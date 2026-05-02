@@ -12,7 +12,7 @@ LDFLAGS = -T script/link.ld -gc-sections -e _start -melf32lriscv
 
 BUILD_DIR = build
 TEST_DIR = test
-SCRIPT_DIR = script
+SCRIPT_DIR = scripts
 SRC_DIR = src
 $(shell mkdir -p $(BUILD_DIR))
 # Source files

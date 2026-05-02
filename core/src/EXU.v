@@ -12,6 +12,8 @@ module EXU #(
     input [`XLEN-1:0]          id_ex_imm,
     input [`XLEN-1:0]          id_ex_rs1_data,
     input [`XLEN-1:0]          id_ex_rs2_data,
+    input [4:0]                id_ex_rs1_addr,
+    input [4:0]                id_ex_rs2_addr,
     input [4:0]                id_ex_rd,
     input [3:0]                id_ex_alu_ctrl,
     input [1:0]                alu_op_ctrl,
@@ -44,12 +46,26 @@ module EXU #(
 
     output reg [`XLEN-1:0]     ex_lsu_wb_data,
     output reg [4:0]           ex_lsu_wb_rd,
-    output reg                 ex_lsu_wb_wen
+    output reg                 ex_lsu_wb_wen,
+
+    // Signals to/from WB stage (MEM/WB forwarding source)
+    input                      wb_rf_we,
+    input [4:0]                wb_rf_rd,
+    input [`XLEN-1:0]          wb_rd_dat
+
+    /*
+    // Signals from LSU/WBU stage forwarding source
+    input                      lsu_wbu_valid,
+    input                      lsu_wbu_wen,
+    input [4:0]                lsu_wbu_rd,
+    input [`XLEN-1:0]          lsu_wbu_data
+    */
 );
 
     //========================================================
     // Internal signals
     //========================================================
+    reg [`XLEN-1:0] fwd_rs1_data, fwd_rs2_data;
     reg [`XLEN-1:0] op1, op2;
     reg [`XLEN-1:0] alu_out;
     reg             j_taken;
@@ -64,20 +80,64 @@ module EXU #(
     reg             ex_lsu_wb_wen_nxt;
 
     wire is_jalr;
-    wire ex_need_lsu;
-    wire ex_payload_fire;
+    //wire ex_need_lsu;
+    //wire ex_payload_fire;
+    wire ex_lsu_fire;
 
     assign is_jalr      = j_en && (id_ex_J_cond == `J_UNCOND) && (alu_op_ctrl == `OP_RS1_IMM);
-    assign ex_need_lsu  = ex_lsu_valid;
-    assign ex_payload_fire = (!ex_need_lsu) || lsu_ex_ready;
+    //assign ex_need_lsu  = ex_lsu_valid;
+    //assign ex_payload_fire = (!ex_need_lsu) || lsu_ex_ready;
+    //assign ex_id_ready = ex_payload_fire;
+    assign ex_id_ready = (~ex_lsu_valid) || lsu_ex_ready;
+    assign ex_lsu_fire = ex_lsu_valid && lsu_ex_ready;
 
 
-    assign ex_id_ready = ex_payload_fire;
+     //========================================================
+    // Forwarding (EX/LSU -> EX, LSU/WB(Regfile) -> EX)
+    //
+    // NOTE:
+    // 1) ex_lsu_* is the current EX/LSU register
+    // 2) Do NOT forward ex_lsu_wb_data for load, because load data
+    //    is not ready yet at EX/LSU stage
+    //========================================================
+    always @(*) begin
+        fwd_rs1_data = id_ex_rs1_data;
+        fwd_rs2_data = id_ex_rs2_data;
+        
+        // rs1 forwarding
+        // EX/MEM forwarding has higher priority
+        if (ex_lsu_valid && ex_lsu_wb_wen &&
+        (ex_lsu_wb_rd != 5'd0) &&
+        (ex_lsu_wb_rd == id_ex_rs1_addr) &&
+        (ex_lsu_ctrl != 2'b01)) begin
+        fwd_rs1_data = ex_lsu_wb_data;
+        end
+        else if (wb_rf_we &&
+                (wb_rf_rd != 5'd0) &&
+                (wb_rf_rd == id_ex_rs1_addr)) begin
+            fwd_rs1_data = wb_rd_dat;
+        end
+
+        // rs2 forwarding
+        if (ex_lsu_valid && ex_lsu_wb_wen &&
+        (ex_lsu_wb_rd != 5'd0) &&
+        (ex_lsu_wb_rd == id_ex_rs2_addr) &&
+        (ex_lsu_ctrl != 2'b01)) begin
+        fwd_rs2_data = ex_lsu_wb_data;
+        end
+        else if (wb_rf_we &&
+             (wb_rf_rd != 5'd0) &&
+             (wb_rf_rd == id_ex_rs2_addr)) begin
+        fwd_rs2_data = wb_rd_dat;
+    end
+end
+    
 
     //========================================================
     // Operand select
     //========================================================
     always @(*) begin
+
         case (alu_op_ctrl)
             `OP_PC_IMM: begin
                 op1 = id_ex_pc;
@@ -85,19 +145,19 @@ module EXU #(
             end
 
             `OP_RS1_IMM: begin
-                op1 = id_ex_rs1_data;
+                op1 = fwd_rs1_data;
                 op2 = id_ex_imm;
             end
 
             `OP_RS1_CSR: begin
-                op1 = id_ex_rs1_data;
+                op1 = fwd_rs1_data;
                 op2 = csr_ex_rdata;
             end
 
             default: begin
                 // `OP_RS1_RS2
-                op1 = id_ex_rs1_data;
-                op2 = id_ex_rs2_data;
+                op1 = fwd_rs1_data;
+                op2 = fwd_rs2_data;
             end
         endcase
     end
@@ -142,6 +202,15 @@ module EXU #(
         if (j_en) begin
             case (id_ex_J_cond)
                 `J_UNCOND: j_taken = 1'b1;
+                `J_BEQ   : j_taken = (fwd_rs1_data == fwd_rs2_data);
+                `J_BNE   : j_taken = (fwd_rs1_data != fwd_rs2_data);
+                `J_BGE   : j_taken = ($signed(fwd_rs1_data) >= $signed(fwd_rs2_data));
+                `J_BGE_U : j_taken = (fwd_rs1_data >= fwd_rs2_data);
+                `J_BLT_U : j_taken = (fwd_rs1_data <  fwd_rs2_data);
+                `J_BLT   : j_taken = ($signed(fwd_rs1_data) <  $signed(fwd_rs2_data));
+                default  : j_taken = 1'b0;
+                /*
+                `J_UNCOND: j_taken = 1'b1;
                 `J_BEQ   : j_taken = (id_ex_rs1_data == id_ex_rs2_data);
                 `J_BNE   : j_taken = (id_ex_rs1_data != id_ex_rs2_data);
                 `J_BGE   : j_taken = ($signed(id_ex_rs1_data) >= $signed(id_ex_rs2_data));
@@ -149,6 +218,7 @@ module EXU #(
                 `J_BLT_U : j_taken = (id_ex_rs1_data <  id_ex_rs2_data);
                 `J_BLT   : j_taken = ($signed(id_ex_rs1_data) <  $signed(id_ex_rs2_data));
                 default  : j_taken = 1'b0;
+                */
             endcase
         end
         else begin
@@ -176,7 +246,7 @@ module EXU #(
             ex_glb_flush   = 1'b1;
 
             if (is_jalr)
-                ex_if_pc = (id_ex_rs1_data + id_ex_imm) & ~{{(DATA_WIDTH-1){1'b0}}, 1'b1};
+                ex_if_pc = (fwd_rs1_data + id_ex_imm) & ~{{(DATA_WIDTH-1){1'b0}}, 1'b1};
             else
                 ex_if_pc = id_ex_pc + id_ex_imm;
         end
@@ -188,7 +258,7 @@ module EXU #(
     always @(*) begin
     ex_lsu_valid_nxt  = id_ex_valid;
     ex_lsu_addr_nxt   = alu_out;
-    ex_lsu_data_nxt   = id_ex_rs2_data;
+    ex_lsu_data_nxt   = fwd_rs2_data;   // store data also needs forwarding
     ex_lsu_wb_rd_nxt  = id_ex_rd;
     ex_lsu_wb_wen_nxt = id_ex_rf_we;
 

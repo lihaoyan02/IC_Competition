@@ -6,7 +6,7 @@ module LSU (
     
     // Input from Execute Stage
     input ex_lsu_valid,
-    output reg lsu_ex_ready,
+    output lsu_ex_ready,
     input [`XLEN-1:0] ex_lsu_addr,     // Memory address
     input [`XLEN-1:0] ex_lsu_data,     // Data to write
     input [1:0] ex_lsu_ctrl,           // 00: no action, 01: read, 10: write

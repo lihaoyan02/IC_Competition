@@ -28,6 +28,8 @@ module IDU #(
     output reg [        `XLEN-1:0] id_ex_rs1_data,
     output reg [        `XLEN-1:0] id_ex_rs2_data,
     output reg [REGADDR_WIDTH-1:0] id_ex_rd,
+    output reg [REGADDR_WIDTH-1:0] id_ex_rs1_addr,
+    output reg [REGADDR_WIDTH-1:0] id_ex_rs2_addr,
     output reg [              3:0] id_ex_alu_ctrl,
     output reg [              1:0] alu_op_ctrl,
     output reg [        `XLEN-1:0] id_ex_pc,
@@ -74,11 +76,13 @@ wire [DATA_WIDTH-1:0] imm_S = {{20{if_id_instr[31]}}, if_id_instr[31:25], if_id_
 wire [DATA_WIDTH-1:0] imm_J = {{12{if_id_instr[31]}}, if_id_instr[19:12], if_id_instr[20], if_id_instr[30:21], 1'b0};
 wire [DATA_WIDTH-1:0] imm_B = {{20{if_id_instr[31]}}, if_id_instr[7], if_id_instr[30:25], if_id_instr[11:8], 1'b0};
 
-
+// Current IF/ID instruction is an unconditional jump.
+// Used only to stop IFU from fetching the next sequential PC.
+wire uncond_jump_in_id = if_id_instr_valid && j_en_nxt && (id_ex_J_cond_nxt == `J_UNCOND);
 
 
 //id_if_instr_ready
-assign id_if_instr_ready = ~id_glb_stall & ex_id_ready; // ID stage is ready when EX can take a new instruction
+assign id_if_instr_ready = ~id_glb_stall & ex_id_ready & ~uncond_jump_in_id; // ID stage is ready when EX can take a new instr for uncondJ, stop
 
 //***********************************************************//
 //                                                           //
@@ -134,6 +138,7 @@ end
 wire [4:0] rs1 = if_id_instr[19:15];
 wire [4:0] rs2 = if_id_instr[24:20];
 
+/*
 //-----------------------------------------------------------
 // RAW hazard with current EX->LSU stage
 //-----------------------------------------------------------
@@ -154,6 +159,7 @@ wire raw_hazard = raw_hazard_rs1 || raw_hazard_rs2;
 // ex_lsu_ctrl == 2'b01 means load/read
 //-----------------------------------------------------------
 wire load_use_hazard = (ex_lsu_ctrl == 2'b01) && raw_hazard;
+//wire uncond_jump_in_ex = id_ex_valid && j_en && (id_ex_J_cond == `J_UNCOND);
 
 //-----------------------------------------------------------
 // Stall generation
@@ -161,12 +167,44 @@ wire load_use_hazard = (ex_lsu_ctrl == 2'b01) && raw_hazard;
 always @(*) begin
     if (rst)
         id_glb_stall = 1'b0;
-    else if (ex_glb_flush)
-        id_glb_stall = 1'b0;
+//    else if (ex_glb_flush)
+//        id_glb_stall = 1'b0;
     else
         id_glb_stall = load_use_hazard || raw_hazard;
 end
+*/
 
+//-----------------------------------------------------------
+// load-use hazard
+//-----------------------------------------------------------
+wire id_ex_is_load = id_ex_valid &&
+                     id_ex_lsu_en &&
+                    !id_ex_lsu_we &&
+                     id_ex_rf_we;
+
+wire load_use_hazard_rs1 = if_id_instr_valid &&
+                           uses_rs1 &&
+                           id_ex_is_load &&
+                           (id_ex_rd != 5'b0) &&
+                           (id_ex_rd == rs1);
+
+wire load_use_hazard_rs2 = if_id_instr_valid &&
+                           uses_rs2 &&
+                           id_ex_is_load &&
+                           (id_ex_rd != 5'b0) &&
+                           (id_ex_rd == rs2);
+
+wire load_use_hazard = load_use_hazard_rs1 || load_use_hazard_rs2;
+
+//-----------------------------------------------------------
+// Stall generation
+//-----------------------------------------------------------
+always @(*) begin
+    if (rst)
+        id_glb_stall = 1'b0;
+    else
+        id_glb_stall = load_use_hazard;
+end
 
 // -------------------------
 // Next-state decoded signals
@@ -499,6 +537,8 @@ always @(posedge clk) begin
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
         id_ex_rs1_data <= `XLEN'b0;
         id_ex_rs2_data <= `XLEN'b0;
+        id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
     end
     else if (ex_glb_flush) begin
@@ -507,15 +547,33 @@ always @(posedge clk) begin
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
         id_ex_rs1_data <= `XLEN'b0;
         id_ex_rs2_data <= `XLEN'b0;
+        id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
     end
     else if (id_glb_stall) begin
+        /*
         id_ex_valid    <= id_ex_valid;
         id_ex_pc       <= id_ex_pc;
         id_ex_imm      <= id_ex_imm;
         id_ex_rs1_data <= id_ex_rs1_data;
         id_ex_rs2_data <= id_ex_rs2_data;
+        id_ex_rs1_addr <= id_ex_rs1_addr;
+        id_ex_rs2_addr <= id_ex_rs2_addr;
         id_ex_rd       <= id_ex_rd;
+        */
+
+        // Insert bubble into ID/EX for load-use hazard.
+        // IF/ID is held by id_if_instr_ready = 0.
+        id_ex_valid    <= 1'b0;
+        id_ex_pc       <= `XLEN'b0;
+        id_ex_imm      <= {DATA_WIDTH{1'b0}};
+        id_ex_rs1_data <= `XLEN'b0;
+        id_ex_rs2_data <= `XLEN'b0;
+        id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
+
     end
     else begin
         id_ex_valid    <= ex_id_ready & if_id_instr_valid;
@@ -523,6 +581,8 @@ always @(posedge clk) begin
         id_ex_imm      <= id_ex_imm_nxt;
         id_ex_rs1_data <= rf_id_rs1_data;
         id_ex_rs2_data <= rf_id_rs2_data;
+        id_ex_rs1_addr <= id_rf_rs1_addr;
+        id_ex_rs2_addr <= id_rf_rs2_addr;
         id_ex_rd       <= id_ex_rd_nxt;
     end
 end
@@ -542,10 +602,16 @@ always @(posedge clk) begin
         id_ex_rf_we    <= 1'b0;
     end
     else if (id_glb_stall) begin
+        /*
         id_ex_alu_ctrl <= id_ex_alu_ctrl;
         alu_op_ctrl    <= alu_op_ctrl;
         wb_ctrl        <= wb_ctrl;
         id_ex_rf_we    <= id_ex_rf_we;
+        */
+        id_ex_alu_ctrl <= `ALU_IDLE;
+        alu_op_ctrl    <= `OP_RS1_RS2;
+        wb_ctrl        <= WB_IDLE;
+        id_ex_rf_we    <= 1'b0;
     end
     else begin
         id_ex_alu_ctrl <= id_ex_alu_ctrl_nxt;
@@ -568,9 +634,14 @@ always @(posedge clk) begin
         id_ex_lsu_ctrl <= 3'b0;
     end
     else if (id_glb_stall) begin
+        /*
         id_ex_lsu_en   <= id_ex_lsu_en;
         id_ex_lsu_we   <= id_ex_lsu_we;
         id_ex_lsu_ctrl <= id_ex_lsu_ctrl;
+        */
+        id_ex_lsu_en   <= 1'b0;
+        id_ex_lsu_we   <= 1'b0;
+        id_ex_lsu_ctrl <= 3'b0;
     end
     else begin
         id_ex_lsu_en   <= id_ex_lsu_en_nxt;
@@ -592,9 +663,14 @@ always @(posedge clk) begin
         id_ex_J_cond <= `J_UNCOND;
     end
     else if (id_glb_stall) begin
+        /*
         ebreak_flag  <= ebreak_flag;
         j_en         <= j_en;
         id_ex_J_cond <= id_ex_J_cond;
+        */
+        ebreak_flag  <= 1'b0;
+        j_en         <= 1'b0;
+        id_ex_J_cond <= `J_UNCOND;
     end
     else begin
         ebreak_flag  <= ebreak_flag_nxt;
@@ -616,9 +692,14 @@ always @(posedge clk) begin
         csr_addr  <= 12'b0;
     end
     else if (id_glb_stall) begin
+        /*
         csr_wen   <= csr_wen;
         csr_event <= csr_event;
         csr_addr  <= csr_addr;
+        */
+        csr_wen   <= 1'b0;
+        csr_event <= 1'b0;
+        csr_addr  <= 12'b0;
     end
     else begin
         csr_wen   <= csr_wen_nxt;
