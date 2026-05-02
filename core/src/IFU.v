@@ -16,13 +16,15 @@ module IFU (
     input       [`XLEN-1:0]  imem_if_rdata,
     input               imem_if_rvalid,
     output      [`XLEN-1:0]  if_imem_araddr,
-    output              if_imem_arvalid
+    output              if_imem_arvalid,
+
+    input ex_glb_flush
 );
 
 assign if_imem_araddr = pc;
 // 只有在IF/ID准备好接受新指令时才发出地址请求
 // id_if_instr_ready需要在wb_if_pc_valid后一拍置1(同步)
-assign if_imem_arvalid = (~rst) & (id_if_instr_ready | wb_if_pc_valid_r); 
+assign if_imem_arvalid = (~rst) & (id_if_instr_ready | wb_if_pc_valid_r) &(~ex_glb_flush); 
 reg [`XLEN-1:0] pc;
 
 // 保证获得新的pc后向imem发起读请求
@@ -51,6 +53,11 @@ always @(posedge clk) begin
         if_id_instr <= 32'b0;
         if_id_pc <= 32'b0;
         if_id_instr_valid <= 1'b0;
+    end
+    else if (ex_glb_flush) begin
+        if_id_instr <= if_id_instr;
+        if_id_pc <= if_id_pc;
+        if_id_instr_valid <= 0;
     end
     else if(imem_if_rvalid) begin
         if_id_instr <= imem_if_rdata;

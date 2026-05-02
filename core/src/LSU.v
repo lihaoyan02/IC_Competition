@@ -6,7 +6,7 @@ module LSU (
     
     // Input from Execute Stage
     input ex_lsu_valid,
-    output reg lsu_ex_ready,
+    output lsu_ex_ready,
     input [`XLEN-1:0] ex_lsu_addr,     // Memory address
     input [`XLEN-1:0] ex_lsu_data,     // Data to write
     input [1:0] ex_lsu_ctrl,           // 00: no action, 01: read, 10: write
@@ -21,6 +21,11 @@ module LSU (
     output reg [`XLEN-1:0] lsu_wbu_data, // Data
     output reg [4:0] lsu_wbu_rd,        // Destination register
     output reg lsu_wbu_wen,             // Write enable for WBU
+
+    /*-----------------for debug--------------------*/
+    input [`XLEN-1:0] ex_lsu_pc,
+    output reg [`XLEN-1:0] lsu_wb_pc,
+    /*----------------------------------------------*/
 
     // Data cache Interface
     output lsu_cache_valid,
@@ -49,7 +54,7 @@ module LSU (
     
     // Connect cache interface
     assign lsu_cache_valid = (lsu_state == WAITING) || (ex_lsu_valid && (ex_lsu_ctrl != 2'b00));
-    assign lsu_ex_ready = (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl == 2'b00)) || 
+    assign lsu_ex_ready = (lsu_state == IDLE && (ex_lsu_ctrl == 2'b00)) || 
         (lsu_state == IDLE && ex_lsu_valid && (ex_lsu_ctrl != 2'b00) && cache_lsu_hit) ||
         (lsu_state == WAITING && cache_lsu_hit);
     assign lsu_cache_addr = (lsu_state == WAITING) ? pending_addr : ex_lsu_addr;
@@ -72,6 +77,7 @@ module LSU (
             pending_size <= 2'b00;
             pending_rd <= 5'h0;
             pending_cache_wen <= 1'b0;
+            lsu_wb_pc <= 0;
         end else begin
             lsu_wbu_valid <= 1'b0; 
             lsu_wbu_data <= 32'h0;
@@ -88,6 +94,7 @@ module LSU (
                             lsu_wbu_rd <= ex_lsu_wb_rd;
                             lsu_wbu_wen <= ex_lsu_wb_wen;
                             lsu_state <= IDLE;  // Stay in idle for next request
+                            lsu_wb_pc <= ex_lsu_pc;
                         end else begin
                             // Cache miss - stall pipeline and save request
                             lsu_wbu_valid <= 1'b0; // Don't send data to WBU yet
@@ -106,6 +113,7 @@ module LSU (
                         lsu_wbu_rd <= ex_lsu_wb_rd;
                         lsu_wbu_wen <= ex_lsu_wb_wen;
                         lsu_state <= IDLE;
+                        lsu_wb_pc <= ex_lsu_pc;
                     end
                     else begin
                         lsu_wbu_valid <= 1'b0;
@@ -128,6 +136,7 @@ module LSU (
                         pending_wmask <= 4'b0000; // Clear pending write mask
                         pending_size <= 2'b00; // Clear pending size
                         pending_rd <= 5'h0; // Clear pending destination register
+                        lsu_wb_pc <= ex_lsu_pc;
                     end else begin
                         // Still waiting
                         lsu_state <= WAITING;

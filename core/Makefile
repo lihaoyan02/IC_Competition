@@ -7,8 +7,8 @@ else ifeq ($(ALL),LSU)
 	TEST_TOPNAME = LSU_tb
 	DUT_SRC = src/LSU.v src/L1_cache.v
 else
-	TEST_TOPNAME = LSU_tb
-	DUT_SRC = src/LSU.v src/L1_cache.v
+	TEST_TOPNAME = top_tb
+	DUT_SRC = $(VSRC)
 endif
 
 VSRC=$(wildcard src/*.v)
