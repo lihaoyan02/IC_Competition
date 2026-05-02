@@ -74,6 +74,8 @@ module top (
     wire [4:0]       ex_lsu_wb_rd;
     wire             ex_lsu_wb_wen;
 
+    wire [`XLEN-1:0] ex_lsu_pc;
+
     //========================================================
     // LSU -> Cache wires
     //========================================================
@@ -93,6 +95,9 @@ module top (
     wire             lsu_wbu_wen;
     wire [`XLEN-1:0] lsu_wbu_data;
     wire [4:0]       lsu_wbu_rd;
+
+
+    wire [`XLEN-1:0] lsu_wb_pc;
 
     //========================================================
     // IFU
@@ -248,6 +253,10 @@ module top (
         .ex_lsu_wb_data  (ex_lsu_wb_data),
         .ex_lsu_wb_rd    (ex_lsu_wb_rd),
         .ex_lsu_wb_wen   (ex_lsu_wb_wen),
+        
+        /*-----------------for debug--------------------*/
+        .ex_lsu_pc       (ex_lsu_pc),
+        /*----------------------------------------------*/
 
         .wb_rf_we        (wb_rf_wen),
         .wb_rf_rd        (wb_rf_rd),
@@ -287,6 +296,11 @@ module top (
         .ex_lsu_wb_data   (ex_lsu_wb_data),
         .ex_lsu_wb_rd     (ex_lsu_wb_rd),
         .ex_lsu_wb_wen    (ex_lsu_wb_wen),
+
+        /*-----------------for debug--------------------*/
+        .ex_lsu_pc(ex_lsu_pc),
+        .lsu_wb_pc(lsu_wb_pc),
+        /*----------------------------------------------*/
 
         .lsu_wbu_valid    (lsu_wbu_valid),
         .lsu_wbu_data     (lsu_wbu_data),

@@ -48,6 +48,10 @@ module EXU #(
     output reg [4:0]           ex_lsu_wb_rd,
     output reg                 ex_lsu_wb_wen,
 
+    /*-----------------for debug--------------------*/
+    output reg [`XLEN-1:0]     id_ex_pc,
+    /*----------------------------------------------*/
+
     // Signals to/from WB stage (MEM/WB forwarding source)
     input                      wb_rf_we,
     input [4:0]                wb_rf_rd,

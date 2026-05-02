@@ -17,8 +17,16 @@ module top_tb();
         rst = 1;
         #20 rst = 0;
 
-        #300
-        $finish;
+    end
+
+    initial begin
+        forever begin
+            @(posedge clk)
+            if (u_top.ebreak_flag==1) begin
+                #30
+                $finish;
+            end
+        end
     end
 
     initial begin
