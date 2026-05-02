@@ -52,7 +52,7 @@ $(TEST_BIN): $(TB_SRC) $(DUT_SRC)
 	@echo "=========================================="
 	@$(VERILATOR) $(VERILATOR_TEST_FLAGS) \
 			-I$(INCLUDE_DIRS) \
-			-DIMG_PATH="\"../build/dummy.bin\"" \
+			-DIMG_PATH="\"../build/add.bin\"" \
 			--top-module $(TEST_TOPNAME) $^ \
 			--Mdir $(TEST_OBJ_DIR) -o $(abspath $(TEST_BIN))
 
