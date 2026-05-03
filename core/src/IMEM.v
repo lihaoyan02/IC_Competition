@@ -7,6 +7,19 @@ module IMEM (
     output reg imem_if_rvalid
 );
 
+`ifndef SV_TEST
+import "DPI-C" function int pmem_read(int raddr);
+
+    always @(*) begin
+        if (imem_valid) begin
+            imem_if_rdata = pmem_read(if_imem_araddr);  // Word-aligned addressing
+            imem_if_rvalid = 1'b1;
+        end else begin
+            imem_if_rdata = 32'b0;
+            imem_if_rvalid = 1'b0;
+        end
+    end
+`else
     reg [`XLEN-1:0] mem [0:1023];  // 4KB instruction memory
 
     initial begin
@@ -53,5 +66,5 @@ module IMEM (
         end
         
     end
-
+`endif
 endmodule

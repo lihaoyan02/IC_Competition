@@ -44,4 +44,10 @@ module Regfile (
                   (we && (rd_addr != 5'b0) && (rd_addr == rs2_addr)) ? rd_data :
                   regs[rs2_addr];
 
+function int read_reg(input int index);
+    return regs[index];
+endfunction
+
+export "DPI-C" function read_reg;
+
 endmodule

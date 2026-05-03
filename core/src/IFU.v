@@ -34,7 +34,7 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-	if (rst) pc <= 32'h0;
+	if (rst) pc <= 32'h80000000;
     else begin
         if (wb_if_pc_valid) begin
             pc <= wb_if_pc;
