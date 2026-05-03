@@ -540,6 +540,23 @@ always @(posedge clk) begin
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
+
+        id_ex_alu_ctrl <= `ALU_IDLE;
+        alu_op_ctrl    <= `OP_RS1_RS2;
+        wb_ctrl        <= WB_IDLE;
+        id_ex_rf_we    <= 1'b0;
+
+        id_ex_lsu_en   <= 1'b0;
+        id_ex_lsu_we   <= 1'b0;
+        id_ex_lsu_ctrl <= 3'b0;
+
+        ebreak_flag  <= 1'b0;
+        j_en         <= 1'b0;
+        id_ex_J_cond <= `J_UNCOND;
+
+        csr_wen   <= 1'b0;
+        csr_event <= 1'b0;
+        csr_addr  <= 12'b0;
     end
     else if (ex_glb_flush) begin
         id_ex_valid    <= 1'b0;
@@ -550,23 +567,30 @@ always @(posedge clk) begin
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
+
+        id_ex_alu_ctrl <= `ALU_IDLE;
+        alu_op_ctrl    <= `OP_RS1_RS2;
+        wb_ctrl        <= WB_IDLE;
+        id_ex_rf_we    <= 1'b0;
+
+        id_ex_lsu_en   <= 1'b0;
+        id_ex_lsu_we   <= 1'b0;
+        id_ex_lsu_ctrl <= 3'b0;
+
+        ebreak_flag  <= 1'b0;
+        j_en         <= 1'b0;
+        id_ex_J_cond <= `J_UNCOND;
+
+        csr_wen   <= 1'b0;
+        csr_event <= 1'b0;
+        csr_addr  <= 12'b0;
     end
     else if (id_glb_stall) begin
-        /*
-        id_ex_valid    <= id_ex_valid;
-        id_ex_pc       <= id_ex_pc;
-        id_ex_imm      <= id_ex_imm;
-        id_ex_rs1_data <= id_ex_rs1_data;
-        id_ex_rs2_data <= id_ex_rs2_data;
-        id_ex_rs1_addr <= id_ex_rs1_addr;
-        id_ex_rs2_addr <= id_ex_rs2_addr;
-        id_ex_rd       <= id_ex_rd;
-        */
 
         // Insert bubble into ID/EX for load-use hazard.
         // IF/ID is held by id_if_instr_ready = 0.
-        id_ex_valid    <= 1'b0;
-        id_ex_pc       <= `XLEN'b0;
+        id_ex_valid    <= 1'b1;
+        id_ex_pc       <= 0;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
         id_ex_rs1_data <= `XLEN'b0;
         id_ex_rs2_data <= `XLEN'b0;
@@ -574,9 +598,26 @@ always @(posedge clk) begin
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
 
+        id_ex_alu_ctrl <= `ALU_IDLE;
+        alu_op_ctrl    <= `OP_RS1_RS2;
+        wb_ctrl        <= WB_IDLE;
+        id_ex_rf_we    <= 1'b0;
+
+        id_ex_lsu_en   <= 1'b0;
+        id_ex_lsu_we   <= 1'b0;
+        id_ex_lsu_ctrl <= 3'b0;
+
+        ebreak_flag  <= 1'b0;
+        j_en         <= 1'b0;
+        id_ex_J_cond <= `J_UNCOND;
+
+        csr_wen   <= 1'b0;
+        csr_event <= 1'b0;
+        csr_addr  <= 12'b0;
+
     end
-    else begin
-        id_ex_valid    <= ex_id_ready & if_id_instr_valid;
+    else if (if_id_instr_valid & (id_if_instr_ready | uncond_jump_in_id)) begin
+        id_ex_valid    <= 1;
         id_ex_pc       <= if_id_pc;
         id_ex_imm      <= id_ex_imm_nxt;
         id_ex_rs1_data <= rf_id_rs1_data;
@@ -584,127 +625,50 @@ always @(posedge clk) begin
         id_ex_rs1_addr <= id_rf_rs1_addr;
         id_ex_rs2_addr <= id_rf_rs2_addr;
         id_ex_rd       <= id_ex_rd_nxt;
-    end
-end
 
-//ALU / writeback control
-always @(posedge clk) begin
-    if (rst) begin
-        id_ex_alu_ctrl <= `ALU_IDLE;
-        alu_op_ctrl    <= `OP_RS1_RS2;
-        wb_ctrl        <= WB_IDLE;
-        id_ex_rf_we    <= 1'b0;
-    end
-    else if (ex_glb_flush) begin
-        id_ex_alu_ctrl <= `ALU_IDLE;
-        alu_op_ctrl    <= `OP_RS1_RS2;
-        wb_ctrl        <= WB_IDLE;
-        id_ex_rf_we    <= 1'b0;
-    end
-    else if (id_glb_stall) begin
-        /*
-        id_ex_alu_ctrl <= id_ex_alu_ctrl;
-        alu_op_ctrl    <= alu_op_ctrl;
-        wb_ctrl        <= wb_ctrl;
-        id_ex_rf_we    <= id_ex_rf_we;
-        */
-        id_ex_alu_ctrl <= `ALU_IDLE;
-        alu_op_ctrl    <= `OP_RS1_RS2;
-        wb_ctrl        <= WB_IDLE;
-        id_ex_rf_we    <= 1'b0;
-    end
-    else begin
         id_ex_alu_ctrl <= id_ex_alu_ctrl_nxt;
         alu_op_ctrl    <= alu_op_ctrl_nxt;
         wb_ctrl        <= wb_ctrl_nxt;
         id_ex_rf_we    <= id_ex_rf_we_nxt;
-    end
-end
 
-//LSU control
-always @(posedge clk) begin
-    if (rst) begin
-        id_ex_lsu_en   <= 1'b0;
-        id_ex_lsu_we   <= 1'b0;
-        id_ex_lsu_ctrl <= 3'b0;
-    end
-    else if (ex_glb_flush) begin
-        id_ex_lsu_en   <= 1'b0;
-        id_ex_lsu_we   <= 1'b0;
-        id_ex_lsu_ctrl <= 3'b0;
-    end
-    else if (id_glb_stall) begin
-        /*
-        id_ex_lsu_en   <= id_ex_lsu_en;
-        id_ex_lsu_we   <= id_ex_lsu_we;
-        id_ex_lsu_ctrl <= id_ex_lsu_ctrl;
-        */
-        id_ex_lsu_en   <= 1'b0;
-        id_ex_lsu_we   <= 1'b0;
-        id_ex_lsu_ctrl <= 3'b0;
-    end
-    else begin
         id_ex_lsu_en   <= id_ex_lsu_en_nxt;
         id_ex_lsu_we   <= id_ex_lsu_we_nxt;
         id_ex_lsu_ctrl <= id_ex_lsu_ctrl_nxt;
-    end
-end
 
-//branch / jump / exception control
-always @(posedge clk) begin
-    if (rst) begin
-        ebreak_flag  <= 1'b0;
-        j_en         <= 1'b0;
-        id_ex_J_cond <= `J_UNCOND;
-    end
-    else if (ex_glb_flush) begin
-        ebreak_flag  <= 1'b0;
-        j_en         <= 1'b0;
-        id_ex_J_cond <= `J_UNCOND;
-    end
-    else if (id_glb_stall) begin
-        /*
-        ebreak_flag  <= ebreak_flag;
-        j_en         <= j_en;
-        id_ex_J_cond <= id_ex_J_cond;
-        */
-        ebreak_flag  <= 1'b0;
-        j_en         <= 1'b0;
-        id_ex_J_cond <= `J_UNCOND;
-    end
-    else begin
         ebreak_flag  <= ebreak_flag_nxt;
         j_en         <= j_en_nxt;
         id_ex_J_cond <= id_ex_J_cond_nxt;
-    end
-end
 
-//CSR control
-always @(posedge clk) begin
-    if (rst) begin
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
-    end
-    else if (ex_glb_flush) begin
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
-    end
-    else if (id_glb_stall) begin
-        /*
-        csr_wen   <= csr_wen;
-        csr_event <= csr_event;
-        csr_addr  <= csr_addr;
-        */
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
-    end
-    else begin
         csr_wen   <= csr_wen_nxt;
         csr_event <= csr_event_nxt;
         csr_addr  <= csr_addr_nxt;
+    end
+    else if (id_if_instr_ready & id_ex_valid) begin
+        id_ex_valid    <= 1'b0;
+        id_ex_pc       <= 0;
+        id_ex_imm      <= {DATA_WIDTH{1'b0}};
+        id_ex_rs1_data <= `XLEN'b0;
+        id_ex_rs2_data <= `XLEN'b0;
+        id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
+        id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
+
+        id_ex_alu_ctrl <= `ALU_IDLE;
+        alu_op_ctrl    <= `OP_RS1_RS2;
+        wb_ctrl        <= WB_IDLE;
+        id_ex_rf_we    <= 1'b0;
+
+        id_ex_lsu_en   <= 1'b0;
+        id_ex_lsu_we   <= 1'b0;
+        id_ex_lsu_ctrl <= 3'b0;
+
+        ebreak_flag  <= 1'b0;
+        j_en         <= 1'b0;
+        id_ex_J_cond <= `J_UNCOND;
+
+        csr_wen   <= 1'b0;
+        csr_event <= 1'b0;
+        csr_addr  <= 12'b0;
     end
 end
 
