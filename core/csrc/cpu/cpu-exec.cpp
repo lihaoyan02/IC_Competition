@@ -135,14 +135,14 @@ extern "C" void npctrap(int pc) {
 }
 
 static void exec_one_inst() {
-	for(int i =0; i<20; i++) {
+	for(int i =0; i<40; i++) {
 		single_cycle();
 		uint32_t current_state = core_read_state();
 		if(current_state==1) {
 			return;
 		}
 	}
-	panic("CPU don't finish inst in 20 cycle");
+	panic("CPU don't finish inst in 40 cycle");
 	
 }
 

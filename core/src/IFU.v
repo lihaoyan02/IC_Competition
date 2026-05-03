@@ -67,7 +67,7 @@ always @(posedge clk) begin
     else begin
         if_id_instr <= if_id_instr;
         if_id_pc <= if_id_pc;
-        if_id_instr_valid <= 0;
+        if_id_instr_valid <= 1;
     end
 end
 endmodule
