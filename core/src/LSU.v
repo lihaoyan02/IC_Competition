@@ -25,6 +25,8 @@ module LSU (
     /*-----------------for debug--------------------*/
     input [`XLEN-1:0] ex_lsu_pc,
     output reg [`XLEN-1:0] lsu_wb_pc,
+    input       ebreak_exu_lsu,
+    output      ebreak_lsu_wbu,
     /*----------------------------------------------*/
 
     // Data cache Interface
@@ -78,11 +80,13 @@ module LSU (
             pending_rd <= 5'h0;
             pending_cache_wen <= 1'b0;
             lsu_wb_pc <= 0;
+            ebreak_lsu_wbu <= 0;
         end else begin
             lsu_wbu_valid <= 1'b0; 
             lsu_wbu_data <= 32'h0;
             lsu_wbu_rd <= 5'h0;
             lsu_wbu_wen <= 1'b0;
+            ebreak_lsu_wbu <= ebreak_exu_lsu;
             case (lsu_state)
                 IDLE: begin  // IDLE - Ready to accept requests                 
                     if (ex_lsu_valid && (ex_lsu_ctrl != 2'b00)) begin

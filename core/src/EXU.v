@@ -50,6 +50,7 @@ module EXU #(
 
     /*-----------------for debug--------------------*/
     output reg [`XLEN-1:0]     ex_lsu_pc,
+    output reg                 ebreak_exu_lsu,
     /*----------------------------------------------*/
 
     // Signals to/from WB stage (MEM/WB forwarding source)
@@ -307,6 +308,7 @@ end
             ex_lsu_wb_rd   <= 5'b0;
             ex_lsu_wb_wen  <= 1'b0;
             ex_lsu_pc <= 0;
+            ebreak_exu_lsu <= 0;
         end
         else if (ex_id_ready&id_ex_valid) begin//lsu_ex_ready) begin
             
@@ -319,6 +321,7 @@ end
             ex_lsu_wb_rd   <= ex_lsu_wb_rd_nxt;
             ex_lsu_wb_wen  <= ex_lsu_wb_wen_nxt;
             ex_lsu_pc <= id_ex_pc;
+            ebreak_exu_lsu <= ebreak_flag;
         end
         else if (!id_ex_valid) begin
             ex_lsu_valid   <= 0;
@@ -330,6 +333,7 @@ end
             ex_lsu_wb_rd   <= 0;
             ex_lsu_wb_wen  <= 0;
             ex_lsu_pc <= 0;
+            ebreak_exu_lsu <= 0;
         end
     end
 
