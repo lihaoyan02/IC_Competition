@@ -1,4 +1,3 @@
-TOPNAME = top #之后用于cpu测试
 
 ifeq ($(ALL),IFU)
 	TEST_TOPNAME = IFU_tb
@@ -14,28 +13,87 @@ endif
 VSRC=$(wildcard src/*.v)
 CSRC=$(wildcard csrc/*.c)
 BUILD_DIR=build
-OBJ_DIR = $(BUILD_DIR)/obj_dir
-BIN = $(BUILD_DIR)/$(TOPNAME)
 
 $(shell mkdir -p $(BUILD_DIR))
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD -cc --build \
-				-O3 --x-assign fast --x-initial fast --autoflush
 
 #----------------cpp test----------------
 all: $(TEST_BIN)
 
-# $(BIN): $(VSRC) $(CSRC)
-# 	@rm -rf $(OBJ_DIR)
-# 	@$(VERILATOR) $(VERILATOR_CFLAGS) \
-# 		--top-module $(TOPNAME) $^ \
-# 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+TOPNAME = top #之后用于cpu测试
+export CORE_HOME=$(shell pwd)
 
-# run: $(BIN)
-# 	@$(BIN)
+-include $(CORE_HOME)/include/config/auto.conf
+-include $(CORE_HOME)/include/config/auto.conf.cmd
 
-#----------------sv test----------------
+CORE_DIR := $(CORE_HOME)
+INC_PATH = $(CORE_DIR)/include
+
+VERILATOR_CFLAGS += -I./src/include
+VERILATOR_CFLAGS += -MMD -cc --build \
+				-O3 --x-assign fast --x-initial fast --autoflush
+VERILATOR_CFLAGS += $(if $(CONFIG_TRACE_WAVE), --trace-vcd)
+BUILD_DIR = $(CORE_DIR)/build
+OBJ_DIR = $(BUILD_DIR)/obj_dir
+BIN = $(BUILD_DIR)/$(TOPNAME)
+
+LDFLAGS = -lreadline -lhistory
+LDFLAGS += $(if $(CONFIG_HAS_VGA), -lSDL2,)
+
+$(shell mkdir -p $(BUILD_DIR))
+
+include $(CORE_HOME)/csrc/utils/filelist.mk
+# project source
+VSRCS = $(wildcard src/*.v)
+CSRCS-y = $(shell find csrc -name "*.cpp" -type f)
+CSRCS-y += $(shell find csrc -name "*.c" -type f)
+CSRCS = $(filter-out $(SRCS-BLACKLIST-y),$(CSRCS-y))
+
+
+# rules for verilator
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += $(INCFLAGS)
+CXXFLAGS += $(if $(CONFIG_CC_DEBUG),-g,)
+CXXFLAGS += $(if $(CONFIG_CC_ASAN),-fsanitize=address,)
+
+# Some convenient rules 
+include $(CORE_HOME)/scripts/difftest.mk
+
+override ARGS ?= --log=$(BUILD_DIR)/core-log.txt
+override ARGS += $(ARGS_DIFF)
+
+# Command to execute CORE
+IMG ?= ../build/add.bin
+CORE_EXEC := $(BIN) $(ARGS) $(IMG)
+
+all: run-env
+	@echo "Building CORE"
+
+$(BIN): $(VSRCS) $(CSRCS)
+	@rm -rf $(OBJ_DIR)
+	@$(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^ \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) \
+		$(addprefix -LDFLAGS , $(LDFLAGS)) 
+
+run-env: $(BIN)
+
+
+# image file
+run: run-env
+	$(CORE_EXEC)
+
+gdb: run-env
+	gdb -s $(BIN) --args $(CORE_EXEC)
+
+.PHONY: run gdb
+
+# Include rules for menuconfig
+
+
+#-----------------------------------------sv test--------------------------------------------
 VERILATOR_TEST_FLAGS = --binary --build -O3 -sv --timing \
 			--trace --trace-structs \
 			--x-assign fast --x-initial fast --autoflush
@@ -53,6 +111,7 @@ $(TEST_BIN): $(TB_SRC) $(DUT_SRC)
 	@$(VERILATOR) $(VERILATOR_TEST_FLAGS) \
 			-I$(INCLUDE_DIRS) \
 			-DIMG_PATH="\"../build/add.bin\"" \
+			-DSV_TEST="y" \
 			--top-module $(TEST_TOPNAME) $^ \
 			--Mdir $(TEST_OBJ_DIR) -o $(abspath $(TEST_BIN))
 
@@ -66,4 +125,5 @@ wave: $(BUILD_DIR)/waveform.vcd
 clean:
 	@rm -rf $(BUILD_DIR)
 
-.PHONY: run clean test wave
+.PHONY: clean test wave
+include $(CORE_HOME)/scripts/config.mk

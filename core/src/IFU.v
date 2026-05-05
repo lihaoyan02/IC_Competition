@@ -34,7 +34,7 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-	if (rst) pc <= 32'h0;
+	if (rst) pc <= 32'h80000000;
     else begin
         if (wb_if_pc_valid) begin
             pc <= wb_if_pc;
@@ -67,7 +67,7 @@ always @(posedge clk) begin
     else begin
         if_id_instr <= if_id_instr;
         if_id_pc <= if_id_pc;
-        if_id_instr_valid <= 0;
+        if_id_instr_valid <= 1;
     end
 end
 endmodule

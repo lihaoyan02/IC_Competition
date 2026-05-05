@@ -16,20 +16,56 @@ module L1_cache (
     output reg [`XLEN-1:0] rdata,    // Data read from cache (combinational)
     output wire hit                    // Cache hit signal (registered)
 );
+    // LFSR for random hit generation
+    reg [31:0] lfsr;
+    wire lfsr_out;
+    localparam LFSR_HIT_THRESHOLD = 20;  // ~62.5% hit rate
+    wire cache_hit = (lfsr[31:26] < LFSR_HIT_THRESHOLD);
+    assign hit = cache_hit & valid;  // Hit is only valid when there's a valid request
+    assign lfsr_out = lfsr[31] ^ lfsr[30] ^ lfsr[28] ^ lfsr[26];
 
+`ifndef SV_TEST
+import "DPI-C" function int pmem_read(int raddr);
+import "DPI-C" function void pmem_write(int waddr, int wdata, byte wmask);
+
+    always @(*) begin
+        if (hit & ~wen) begin
+            case (size)
+                2'b00: rdata = pmem_read(addr) >> (addr[1:0] * 8); // Byte
+                2'b01: rdata = pmem_read(addr) >> (addr[1] * 16); // Half-word
+                2'b10: rdata = pmem_read(addr); // Word
+                default: rdata = pmem_read(addr);
+            endcase
+        end
+    end
+    
+    // Synchronous hit signal for pipeline control
+    always @(posedge clk) begin
+        if (rst) begin
+            lfsr <= 32'hACE1;
+        end else begin
+            // Update LFSR on every cycle for continuous randomness
+            lfsr <= {lfsr[30:0], lfsr_out};
+            if (hit & wen) begin
+                // Write hit - update memory with write mask
+                pmem_write(addr, wdata, {4'b0,wmask});
+            end
+        end
+    end
+
+
+`else
     // Simple memory for testing - stores incrementing values based on address
     parameter MEM_SIZE = 1024;        // 1K memory locations
     reg [31:0] memory [MEM_SIZE-1:0];
     
-    // LFSR for random hit generation
-    reg [31:0] lfsr;
-    wire lfsr_out;
+    
     
     // Hit rate control: LFSR_HIT_THRESHOLD determines hit probability
     // Higher values = higher hit rate. Range: 0-32
-    localparam LFSR_HIT_THRESHOLD = 20;  // ~62.5% hit rate
     
-    integer i;
+    
+    // integer i;
     // Initialize memory with values equal to the address (incrementing)
     initial begin
         // for (i = 0; i < MEM_SIZE; i = i + 1) begin
@@ -66,19 +102,18 @@ module L1_cache (
         end
     endtask
     
-    // LFSR (Linear Feedback Shift Register) for random number generation
-    // Using Fibonacci LFSR with taps at bits 31, 30, 28, 26
-    assign lfsr_out = lfsr[31] ^ lfsr[30] ^ lfsr[28] ^ lfsr[26];
+    LFSR (Linear Feedback Shift Register) for random number generation
+    Using Fibonacci LFSR with taps at bits 31, 30, 28, 26
     
-    // Determine hit based on LFSR - MSBs give better randomness
-    wire cache_hit = (lfsr[31:26] < LFSR_HIT_THRESHOLD);
-    assign hit = cache_hit & valid;  // Hit is only valid when there's a valid request
     
-    // Memory address (lower bits of address, masked to MEM_SIZE)
+    Determine hit based on LFSR - MSBs give better randomness
+
+    
+    Memory address (lower bits of address, masked to MEM_SIZE)
     wire [11:0] mem_addr = addr[11:0];
     
-    // Combinational read data path (like Regfile)
-    // Return memory data directly when valid and read operation
+    Combinational read data path (like Regfile)
+    Return memory data directly when valid and read operation
     always @(*) begin
         case (size)
             2'b00: rdata = memory[mem_addr[11:2]] >> (mem_addr[1:0] * 8); // Byte
@@ -104,5 +139,5 @@ module L1_cache (
             end
         end
     end
-
+`endif
 endmodule

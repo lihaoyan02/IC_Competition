@@ -49,7 +49,8 @@ module EXU #(
     output reg                 ex_lsu_wb_wen,
 
     /*-----------------for debug--------------------*/
-    output reg [`XLEN-1:0]     id_ex_pc,
+    output reg [`XLEN-1:0]     ex_lsu_pc,
+    output reg                 ebreak_exu_lsu,
     /*----------------------------------------------*/
 
     // Signals to/from WB stage (MEM/WB forwarding source)
@@ -92,7 +93,7 @@ module EXU #(
     //assign ex_need_lsu  = ex_lsu_valid;
     //assign ex_payload_fire = (!ex_need_lsu) || lsu_ex_ready;
     //assign ex_id_ready = ex_payload_fire;
-    assign ex_id_ready = (~ex_lsu_valid) || lsu_ex_ready;
+    assign ex_id_ready = lsu_ex_ready; //(~ex_lsu_valid) || 
     assign ex_lsu_fire = ex_lsu_valid && lsu_ex_ready;
 
 
@@ -260,7 +261,7 @@ end
     // Next EX/LSU payload generation
     //========================================================
     always @(*) begin
-    ex_lsu_valid_nxt  = id_ex_valid;
+    // ex_lsu_valid_nxt  = id_ex_valid;
     ex_lsu_addr_nxt   = alu_out;
     ex_lsu_data_nxt   = fwd_rs2_data;   // store data also needs forwarding
     ex_lsu_wb_rd_nxt  = id_ex_rd;
@@ -306,10 +307,12 @@ end
             ex_lsu_wb_data <= {DATA_WIDTH{1'b0}};
             ex_lsu_wb_rd   <= 5'b0;
             ex_lsu_wb_wen  <= 1'b0;
+            ex_lsu_pc <= 0;
+            ebreak_exu_lsu <= 0;
         end
-        else if (lsu_ex_ready) begin
+        else if (ex_id_ready&id_ex_valid) begin//lsu_ex_ready) begin
             
-            ex_lsu_valid   <= ex_lsu_valid_nxt;
+            ex_lsu_valid   <= 1;
             ex_lsu_addr    <= ex_lsu_addr_nxt;
             ex_lsu_data    <= ex_lsu_data_nxt;
             ex_lsu_ctrl    <= ex_lsu_ctrl_nxt;
@@ -317,16 +320,20 @@ end
             ex_lsu_wb_data <= ex_lsu_wb_data_nxt;
             ex_lsu_wb_rd   <= ex_lsu_wb_rd_nxt;
             ex_lsu_wb_wen  <= ex_lsu_wb_wen_nxt;
+            ex_lsu_pc <= id_ex_pc;
+            ebreak_exu_lsu <= ebreak_flag;
         end
-        else begin
-            ex_lsu_valid   <= ex_lsu_valid;
-            ex_lsu_addr    <= ex_lsu_addr;
-            ex_lsu_data    <= ex_lsu_data;
-            ex_lsu_ctrl    <= ex_lsu_ctrl;
-            ex_lsu_size    <= ex_lsu_size;
-            ex_lsu_wb_data <= ex_lsu_wb_data;
-            ex_lsu_wb_rd   <= ex_lsu_wb_rd;
-            ex_lsu_wb_wen  <= ex_lsu_wb_wen;
+        else if (!id_ex_valid) begin
+            ex_lsu_valid   <= 0;
+            ex_lsu_addr    <= 0;
+            ex_lsu_data    <= 0;
+            ex_lsu_ctrl    <= 0;
+            ex_lsu_size    <= 0;
+            ex_lsu_wb_data <= 0;
+            ex_lsu_wb_rd   <= 0;
+            ex_lsu_wb_wen  <= 0;
+            ex_lsu_pc <= 0;
+            ebreak_exu_lsu <= 0;
         end
     end
 
