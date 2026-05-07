@@ -109,8 +109,8 @@ module top (
         .rst               (rst),
 
         // 来自 EXU 的跳转信息
-        .wb_if_pc          (ex_if_pc),
-        .wb_if_pc_valid    (ex_if_pc_valid),
+        .ex_if_pc          (ex_if_pc),
+        .ex_if_pc_valid    (ex_if_pc_valid),
 
         // IF/ID 寄存器
         .if_id_instr       (if_id_instr),

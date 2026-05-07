@@ -2,9 +2,9 @@
 module IFU (
     input                       clk,
     input                       rst,
-    //来自WB阶段的跳转信息
-    input       [`XLEN-1:0]     wb_if_pc,
-    input                       wb_if_pc_valid,
+    //来自EX阶段的跳转信息
+    input       [`XLEN-1:0]     ex_if_pc,
+    input                       ex_if_pc_valid,
 
     //IF/ID寄存器
     output reg  [`XLEN-1:0]  if_id_instr,
@@ -23,21 +23,21 @@ module IFU (
 
 assign if_imem_araddr = pc;
 // 只有在IF/ID准备好接受新指令时才发出地址请求
-// id_if_instr_ready需要在wb_if_pc_valid后一拍置1(同步)
-assign if_imem_arvalid = (~rst) & (id_if_instr_ready | wb_if_pc_valid_r) &(~ex_glb_flush); 
+// id_if_instr_ready需要在ex_if_pc_valid后一拍置1(同步)
+assign if_imem_arvalid = (~rst) & (id_if_instr_ready | ex_if_pc_valid_r) &(~ex_glb_flush); 
 reg [`XLEN-1:0] pc;
 
 // 保证获得新的pc后向imem发起读请求
-reg wb_if_pc_valid_r;
+reg ex_if_pc_valid_r;
 always @(posedge clk) begin
-    wb_if_pc_valid_r <= wb_if_pc_valid;
+    ex_if_pc_valid_r <= ex_if_pc_valid;
 end
 
 always @(posedge clk) begin
 	if (rst) pc <= 32'h80000000;
     else begin
-        if (wb_if_pc_valid) begin
-            pc <= wb_if_pc;
+        if (ex_if_pc_valid) begin
+            pc <= ex_if_pc;
         end
         else if(id_if_instr_ready) begin
             pc <= pc + 4;
