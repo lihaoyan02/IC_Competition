@@ -11,6 +11,7 @@ module LSU (
     input [`XLEN-1:0] ex_lsu_data,     // Data to write
     input [1:0] ex_lsu_ctrl,           // 00: no action, 01: read, 10: write
     input [1:0] ex_lsu_size,        // 00: byte, 01: half-word, 10: word
+    input ex_lsu_is_uload,
 
     input [`XLEN-1:0] ex_lsu_wb_data,
     input [4:0] ex_lsu_wb_rd,
@@ -50,6 +51,7 @@ module LSU (
     reg [3:0] pending_wmask, wmask;
     reg [1:0] pending_size;
     reg [4:0] pending_rd;
+    reg pending_uload;
     reg pending_cache_wen;
     reg [`XLEN-1:0] wb_data; // Data to write back to WBU
     wire cache_wen = ex_lsu_valid ? (ex_lsu_ctrl == 2'b10) : 1'b0; // Write enable for cache
@@ -78,6 +80,7 @@ module LSU (
             pending_wmask <= 4'b0000;
             pending_size <= 2'b00;
             pending_rd <= 5'h0;
+            pending_uload <= 1'b0;
             pending_cache_wen <= 1'b0;
             lsu_wb_pc <= 0;
             ebreak_lsu_wbu <= 0;
@@ -108,6 +111,7 @@ module LSU (
                             pending_wmask <= wmask;
                             pending_size <= ex_lsu_size;
                             pending_rd <= ex_lsu_wb_rd;
+                            pending_uload <= ex_lsu_is_uload;
                             lsu_state <= WAITING;  // Move to waiting state
                         end
                     end 
@@ -140,6 +144,7 @@ module LSU (
                         pending_wmask <= 4'b0000; // Clear pending write mask
                         pending_size <= 2'b00; // Clear pending size
                         pending_rd <= 5'h0; // Clear pending destination register
+                        pending_uload <= 1'b0;
                         lsu_wb_pc <= ex_lsu_pc;
                     end else begin
                         // Still waiting
@@ -182,16 +187,24 @@ module LSU (
         if (cache_lsu_hit & !lsu_cache_wen) begin
             if (lsu_state == IDLE) begin
                 case (ex_lsu_size)
-                2'b00: wb_data = {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]}; // Byte
-                2'b01: wb_data = {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]}; // Half-word
+                2'b00: wb_data = (ex_lsu_is_uload == 1'b0) ? 
+                                {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]} :
+                                {{24{1'b0}}, cache_lsu_rdata[7:0]}; // Byte
+                2'b01: wb_data = (ex_lsu_is_uload == 1'b0) ?
+                                 {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]} : 
+                                 {{16{1'b0}}, cache_lsu_rdata[15:0]}; // Half-word
                 2'b10: wb_data = cache_lsu_rdata;// Word
                 default: $finish;
                 endcase
             end
             else if (lsu_state == WAITING) begin
                 case (pending_size)
-                2'b00: wb_data = {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]}; // Byte
-                2'b01: wb_data = {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]}; // Half-word
+                2'b00: wb_data = (pending_uload == 1'b0) ? 
+                                {{24{cache_lsu_rdata[7]}}, cache_lsu_rdata[7:0]} :
+                                {{24{1'b0}}, cache_lsu_rdata[7:0]}; // Byte
+                2'b01: wb_data = (pending_uload == 1'b0) ?
+                                 {{16{cache_lsu_rdata[15]}}, cache_lsu_rdata[15:0]} : 
+                                 {{16{1'b0}}, cache_lsu_rdata[15:0]}; // Half-word
                 2'b10: wb_data = cache_lsu_rdata;// Word
                 default: $finish;
                 endcase

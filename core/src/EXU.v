@@ -10,8 +10,6 @@ module EXU #(
     input                      id_ex_valid,
     input [`XLEN-1:0]          id_ex_pc,
     input [`XLEN-1:0]          id_ex_imm,
-    input [`XLEN-1:0]          id_ex_rs1_data,
-    input [`XLEN-1:0]          id_ex_rs2_data,
     input [4:0]                id_ex_rs1_addr,
     input [4:0]                id_ex_rs2_addr,
     input [4:0]                id_ex_rd,
@@ -25,8 +23,15 @@ module EXU #(
     input                      ebreak_flag,
     input                      j_en,
     input [2:0]                id_ex_J_cond,
+    input                      id_ex_is_uload,
     output                     ex_id_ready,
     output reg                 ex_glb_flush,
+
+    // Signals to/from Regfile
+    input [`XLEN-1:0]          rf_ex_rs1_data,
+    input [`XLEN-1:0]          rf_ex_rs2_data,
+    output [4:0]               ex_rf_rs1_addr,
+    output [4:0]               ex_rf_rs2_addr, 
 
     // CSR read data
     input [`XLEN-1:0]          csr_ex_rdata,
@@ -43,6 +48,7 @@ module EXU #(
     output reg [`XLEN-1:0]     ex_lsu_data,
     output reg [1:0]           ex_lsu_ctrl,      // 00:none 01:read 10:write
     output reg [1:0]           ex_lsu_size,      // 00:byte 01:half 10:word
+    output reg                 ex_lsu_is_uload,
 
     output reg [`XLEN-1:0]     ex_lsu_wb_data,
     output reg [4:0]           ex_lsu_wb_rd,
@@ -105,9 +111,11 @@ module EXU #(
     // 2) Do NOT forward ex_lsu_wb_data for load, because load data
     //    is not ready yet at EX/LSU stage
     //========================================================
+    assign ex_rf_rs1_addr = id_ex_rs1_addr;
+    assign ex_rf_rs2_addr = id_ex_rs2_addr;
     always @(*) begin
-        fwd_rs1_data = id_ex_rs1_data;
-        fwd_rs2_data = id_ex_rs2_data;
+        fwd_rs1_data = rf_ex_rs1_data;
+        fwd_rs2_data = rf_ex_rs2_data;
         
         // rs1 forwarding
         // EX/MEM forwarding has higher priority
@@ -307,6 +315,7 @@ end
             ex_lsu_wb_data <= {DATA_WIDTH{1'b0}};
             ex_lsu_wb_rd   <= 5'b0;
             ex_lsu_wb_wen  <= 1'b0;
+            ex_lsu_is_uload <= 1'b0;
             ex_lsu_pc <= 0;
             ebreak_exu_lsu <= 0;
         end
@@ -320,6 +329,7 @@ end
             ex_lsu_wb_data <= ex_lsu_wb_data_nxt;
             ex_lsu_wb_rd   <= ex_lsu_wb_rd_nxt;
             ex_lsu_wb_wen  <= ex_lsu_wb_wen_nxt;
+            ex_lsu_is_uload <= id_ex_is_uload;
             ex_lsu_pc <= id_ex_pc;
             ebreak_exu_lsu <= ebreak_flag;
         end
@@ -332,6 +342,7 @@ end
             ex_lsu_wb_data <= 0;
             ex_lsu_wb_rd   <= 0;
             ex_lsu_wb_wen  <= 0;
+            ex_lsu_is_uload <= 0;
             ex_lsu_pc <= 0;
             ebreak_exu_lsu <= 0;
         end

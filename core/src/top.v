@@ -33,13 +33,9 @@ module top (
     //========================================================
     wire             id_ex_valid;
     wire [`XLEN-1:0] id_ex_imm;
-    wire [`XLEN-1:0] id_ex_rs1_data;
-    wire [`XLEN-1:0] id_ex_rs2_data;
     wire [4:0]       id_ex_rd;
     wire [4:0]       id_ex_rs1_addr;
     wire [4:0]       id_ex_rs2_addr;
-    wire [4:0]       id_rf_rs1_addr;
-    wire [4:0]       id_rf_rs2_addr;
     wire [3:0]       id_ex_alu_ctrl;
     wire [1:0]       alu_op_ctrl;
     wire [`XLEN-1:0] id_ex_pc;
@@ -51,15 +47,22 @@ module top (
     wire             ebreak_flag;
     wire             j_en;
     wire [2:0]       id_ex_J_cond;
+    wire             id_ex_is_uload;
 
     //========================================================
     // Regfile / WBU wires
     //========================================================
-    wire [`XLEN-1:0] rf_id_rs1_data;
-    wire [`XLEN-1:0] rf_id_rs2_data;
     wire [`XLEN-1:0] wb_rf_data;
     wire             wb_rf_wen;
     wire [4:0]       wb_rf_rd;
+
+    //========================================================
+    // Regfile / EXU wires
+    //========================================================
+    wire [`XLEN-1:0] rf_ex_rs1_data;
+    wire [`XLEN-1:0] rf_ex_rs2_data;
+    wire [4:0] ex_rf_rs1_addr;
+    wire [4:0] ex_rf_rs2_addr;
 
     //========================================================
     // EXU -> LSU / IDU hazard detect wires
@@ -73,6 +76,7 @@ module top (
     wire [1:0]       ex_lsu_size;
     wire [4:0]       ex_lsu_wb_rd;
     wire             ex_lsu_wb_wen;
+    wire             ex_lsu_is_uload;
 
     wire [`XLEN-1:0] ex_lsu_pc;
     wire             ebreak_exu_lsu;
@@ -162,8 +166,8 @@ module top (
 
         .id_ex_valid     (id_ex_valid),
         .id_ex_imm       (id_ex_imm),
-        .id_ex_rs1_data  (id_ex_rs1_data),
-        .id_ex_rs2_data  (id_ex_rs2_data),
+//        .id_ex_rs1_data  (id_ex_rs1_data),
+//        .id_ex_rs2_data  (id_ex_rs2_data),
         .id_ex_rd        (id_ex_rd),
         .id_ex_rs1_addr  (id_ex_rs1_addr),
         .id_ex_rs2_addr  (id_ex_rs2_addr),
@@ -178,12 +182,13 @@ module top (
         .ebreak_flag     (ebreak_flag),
         .j_en            (j_en),
         .id_ex_J_cond    (id_ex_J_cond),
+        .id_ex_is_uload  (id_ex_is_uload),
 
         // Register file access
-        .rf_id_rs1_data  (rf_id_rs1_data),
-        .rf_id_rs2_data  (rf_id_rs2_data),
-        .id_rf_rs1_addr  (id_rf_rs1_addr),
-        .id_rf_rs2_addr  (id_rf_rs2_addr),
+//        .rf_id_rs1_data  (rf_id_rs1_data),
+//        .rf_id_rs2_data  (rf_id_rs2_data),
+//        .id_rf_rs1_addr  (id_rf_rs1_addr),
+//        .id_rf_rs2_addr  (id_rf_rs2_addr),
 
         // Signals to/from CSR
         .csr_wen         (),
@@ -201,10 +206,10 @@ module top (
         .clk       (clk),
         .rst       (rst),
 
-        .rs1_addr  (id_rf_rs1_addr),
-        .rs2_addr  (id_rf_rs2_addr),
-        .rs1_data  (rf_id_rs1_data),
-        .rs2_data  (rf_id_rs2_data),
+        .rs1_addr  (ex_rf_rs1_addr),
+        .rs2_addr  (ex_rf_rs2_addr),
+        .rs1_data  (rf_ex_rs1_data),
+        .rs2_data  (rf_ex_rs2_data),
 
         .we        (wb_rf_wen),
         .rd_addr   (wb_rf_rd),
@@ -221,8 +226,8 @@ module top (
         .id_ex_valid     (id_ex_valid),
         .id_ex_pc        (id_ex_pc),
         .id_ex_imm       (id_ex_imm),
-        .id_ex_rs1_data  (id_ex_rs1_data),
-        .id_ex_rs2_data  (id_ex_rs2_data),
+//        .id_ex_rs1_data  (id_ex_rs1_data),
+//        .id_ex_rs2_data  (id_ex_rs2_data),
         .id_ex_rs1_addr  (id_ex_rs1_addr),
         .id_ex_rs2_addr  (id_ex_rs2_addr),
         .id_ex_rd        (id_ex_rd),
@@ -236,9 +241,16 @@ module top (
         .ebreak_flag     (ebreak_flag),
         .j_en            (j_en),
         .id_ex_J_cond    (id_ex_J_cond),
+        .id_ex_is_uload  (id_ex_is_uload),
 
         .ex_id_ready     (ex_id_ready),
         .ex_glb_flush    (ex_glb_flush),
+
+        .rf_ex_rs1_data  (rf_ex_rs1_data), 
+        .rf_ex_rs2_data  (rf_ex_rs2_data),
+
+        .ex_rf_rs1_addr  (ex_rf_rs1_addr),
+        .ex_rf_rs2_addr  (ex_rf_rs2_addr),        
 
         .csr_ex_rdata    ({`XLEN{1'b0}}),
 
@@ -251,6 +263,7 @@ module top (
         .ex_lsu_data     (ex_lsu_data),
         .ex_lsu_ctrl     (ex_lsu_ctrl),
         .ex_lsu_size     (ex_lsu_size),
+        .ex_lsu_is_uload (ex_lsu_is_uload),
 
         .ex_lsu_wb_data  (ex_lsu_wb_data),
         .ex_lsu_wb_rd    (ex_lsu_wb_rd),
@@ -295,6 +308,7 @@ module top (
         .ex_lsu_data      (ex_lsu_data),
         .ex_lsu_ctrl      (ex_lsu_ctrl),
         .ex_lsu_size      (ex_lsu_size),
+        .ex_lsu_is_uload  (ex_lsu_is_uload),
 
         .ex_lsu_wb_data   (ex_lsu_wb_data),
         .ex_lsu_wb_rd     (ex_lsu_wb_rd),
