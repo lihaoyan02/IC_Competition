@@ -25,8 +25,8 @@ module IDU #(
 
     output reg                     id_ex_valid,
     output reg [   DATA_WIDTH-1:0] id_ex_imm,
-    output reg [        `XLEN-1:0] id_ex_rs1_data,
-    output reg [        `XLEN-1:0] id_ex_rs2_data,
+//    output reg [        `XLEN-1:0] id_ex_rs1_data,
+//    output reg [        `XLEN-1:0] id_ex_rs2_data,
     output reg [REGADDR_WIDTH-1:0] id_ex_rd,
     output reg [REGADDR_WIDTH-1:0] id_ex_rs1_addr,
     output reg [REGADDR_WIDTH-1:0] id_ex_rs2_addr,
@@ -41,12 +41,13 @@ module IDU #(
     output reg                     ebreak_flag,
     output reg                     j_en,
     output reg [              2:0] id_ex_J_cond,
+    output reg                     id_ex_is_uload,
 
     // Register file access
-    input      [        `XLEN-1:0] rf_id_rs1_data,
-    input      [        `XLEN-1:0] rf_id_rs2_data,
-    output reg [REGADDR_WIDTH-1:0] id_rf_rs1_addr,
-    output reg [REGADDR_WIDTH-1:0] id_rf_rs2_addr,
+//    input      [        `XLEN-1:0] rf_id_rs1_data,
+//    input      [        `XLEN-1:0] rf_id_rs2_data,
+//    output reg [REGADDR_WIDTH-1:0] id_rf_rs1_addr,
+//    output reg [REGADDR_WIDTH-1:0] id_rf_rs2_addr,
 
     // Signals to/from csr
     output reg        csr_wen,
@@ -224,6 +225,10 @@ reg                        csr_wen_nxt;
 reg                        csr_event_nxt;
 reg [11:0]                 csr_addr_nxt;
 reg [2:0]                  id_ex_lsu_ctrl_nxt;
+reg [REGADDR_WIDTH-1:0]    id_ex_rs1_addr_nxt;
+reg [REGADDR_WIDTH-1:0]    id_ex_rs2_addr_nxt;
+reg                        id_ex_is_uload_nxt;
+
 
 `ifndef SYNTHESIS
 task unknown_inst;
@@ -257,6 +262,7 @@ always @(*) begin
     csr_event_nxt      = 1'b0;
     csr_addr_nxt       = if_id_instr[31:20];
     id_ex_lsu_ctrl_nxt = funct3;
+    id_ex_is_uload_nxt = 1'b0;
 
     if (if_id_instr_valid) begin
         case (opcode)
@@ -415,7 +421,7 @@ always @(*) begin
 
             `INST_TYPE_IL: begin
                 case (funct3)
-                    `F3_LB, `F3_LH, `F3_LW, `F3_LBU, `F3_LHU: begin
+                    `F3_LB, `F3_LH, `F3_LW: begin
                         id_ex_alu_ctrl_nxt = `ALU_ADD;
                         alu_op_ctrl_nxt    = `OP_RS1_IMM;
                         id_ex_imm_nxt      = imm_I;
@@ -423,6 +429,17 @@ always @(*) begin
                         id_ex_lsu_we_nxt   = 1'b0;
                         id_ex_rf_we_nxt    = 1'b1;
                         wb_ctrl_nxt        = WB_MEM;
+                        id_ex_is_uload_nxt = 1'b0;
+                    end
+                    `F3_LBU, `F3_LHU: begin
+                        id_ex_alu_ctrl_nxt = `ALU_ADD;
+                        alu_op_ctrl_nxt    = `OP_RS1_IMM;
+                        id_ex_imm_nxt      = imm_I;
+                        id_ex_lsu_en_nxt   = 1'b1;
+                        id_ex_lsu_we_nxt   = 1'b0;
+                        id_ex_rf_we_nxt    = 1'b1;
+                        wb_ctrl_nxt        = WB_MEM;    
+                        id_ex_is_uload_nxt = 1'b1;                    
                     end
                     default: begin
                         `ifndef SYNTHESIS
@@ -452,7 +469,7 @@ always @(*) begin
 
             `INST_SYSTEM: begin
                 if ((imm_I == {{(DATA_WIDTH-1){1'b0}},1'b1}) &&
-                    (id_rf_rs1_addr == {REGADDR_WIDTH{1'b0}}) &&
+                    (id_ex_rs1_addr_nxt == {REGADDR_WIDTH{1'b0}}) &&
                     (funct3 == `F3_EBREAK) &&
                     (id_ex_rd_nxt == {REGADDR_WIDTH{1'b0}})) begin
                     ebreak_flag_nxt = 1'b1;
@@ -509,16 +526,16 @@ end
 //***********************************************************//
 always @(*) begin
     if (rst) begin
-        id_rf_rs1_addr = {REGADDR_WIDTH{1'b0}};
-        id_rf_rs2_addr = {REGADDR_WIDTH{1'b0}};
+        id_ex_rs1_addr_nxt = {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr_nxt = {REGADDR_WIDTH{1'b0}};
     end
     else if (ex_glb_flush) begin
-        id_rf_rs1_addr = {REGADDR_WIDTH{1'b0}};
-        id_rf_rs2_addr = {REGADDR_WIDTH{1'b0}};
+        id_ex_rs1_addr_nxt = {REGADDR_WIDTH{1'b0}};
+        id_ex_rs2_addr_nxt = {REGADDR_WIDTH{1'b0}};
     end
     else begin
-        id_rf_rs1_addr = if_id_instr[19:15];
-        id_rf_rs2_addr = if_id_instr[24:20];
+        id_ex_rs1_addr_nxt = if_id_instr[19:15];
+        id_ex_rs2_addr_nxt = if_id_instr[24:20];
     end
 end
 
@@ -535,8 +552,8 @@ always @(posedge clk) begin
         id_ex_valid    <= 1'b0;
         id_ex_pc       <= `XLEN'b0;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
-        id_ex_rs1_data <= `XLEN'b0;
-        id_ex_rs2_data <= `XLEN'b0;
+//        id_ex_rs1_data <= `XLEN'b0;
+//        id_ex_rs2_data <= `XLEN'b0;
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
@@ -545,6 +562,7 @@ always @(posedge clk) begin
         alu_op_ctrl    <= `OP_RS1_RS2;
         wb_ctrl        <= WB_IDLE;
         id_ex_rf_we    <= 1'b0;
+        id_ex_is_uload <= 1'b0;
 
         id_ex_lsu_en   <= 1'b0;
         id_ex_lsu_we   <= 1'b0;
@@ -562,8 +580,8 @@ always @(posedge clk) begin
         id_ex_valid    <= 1'b0;
         id_ex_pc       <= `XLEN'b0;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
-        id_ex_rs1_data <= `XLEN'b0;
-        id_ex_rs2_data <= `XLEN'b0;
+//        id_ex_rs1_data <= `XLEN'b0;
+//        id_ex_rs2_data <= `XLEN'b0;
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
@@ -572,6 +590,7 @@ always @(posedge clk) begin
         alu_op_ctrl    <= `OP_RS1_RS2;
         wb_ctrl        <= WB_IDLE;
         id_ex_rf_we    <= 1'b0;
+        id_ex_is_uload <= 1'b0;
 
         id_ex_lsu_en   <= 1'b0;
         id_ex_lsu_we   <= 1'b0;
@@ -589,11 +608,11 @@ always @(posedge clk) begin
 
         // Insert bubble into ID/EX for load-use hazard.
         // IF/ID is held by id_if_instr_ready = 0.
-        id_ex_valid    <= 1'b1;
-        id_ex_pc       <= 0;
+        id_ex_valid    <= 1'b0;
+        id_ex_pc       <= `XLEN'b0;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
-        id_ex_rs1_data <= `XLEN'b0;
-        id_ex_rs2_data <= `XLEN'b0;
+//        id_ex_rs1_data <= `XLEN'b0;
+//        id_ex_rs2_data <= `XLEN'b0;
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
@@ -602,6 +621,7 @@ always @(posedge clk) begin
         alu_op_ctrl    <= `OP_RS1_RS2;
         wb_ctrl        <= WB_IDLE;
         id_ex_rf_we    <= 1'b0;
+        id_ex_is_uload <= 1'b0;
 
         id_ex_lsu_en   <= 1'b0;
         id_ex_lsu_we   <= 1'b0;
@@ -620,16 +640,17 @@ always @(posedge clk) begin
         id_ex_valid    <= 1;
         id_ex_pc       <= if_id_pc;
         id_ex_imm      <= id_ex_imm_nxt;
-        id_ex_rs1_data <= rf_id_rs1_data;
-        id_ex_rs2_data <= rf_id_rs2_data;
-        id_ex_rs1_addr <= id_rf_rs1_addr;
-        id_ex_rs2_addr <= id_rf_rs2_addr;
+//        id_ex_rs1_data <= rf_id_rs1_data;
+//        id_ex_rs2_data <= rf_id_rs2_data;
+        id_ex_rs1_addr <= id_ex_rs1_addr_nxt;
+        id_ex_rs2_addr <= id_ex_rs2_addr_nxt;
         id_ex_rd       <= id_ex_rd_nxt;
 
         id_ex_alu_ctrl <= id_ex_alu_ctrl_nxt;
         alu_op_ctrl    <= alu_op_ctrl_nxt;
         wb_ctrl        <= wb_ctrl_nxt;
         id_ex_rf_we    <= id_ex_rf_we_nxt;
+        id_ex_is_uload <= id_ex_is_uload_nxt;
 
         id_ex_lsu_en   <= id_ex_lsu_en_nxt;
         id_ex_lsu_we   <= id_ex_lsu_we_nxt;
@@ -647,8 +668,8 @@ always @(posedge clk) begin
         id_ex_valid    <= 1'b0;
         id_ex_pc       <= 0;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
-        id_ex_rs1_data <= `XLEN'b0;
-        id_ex_rs2_data <= `XLEN'b0;
+//        id_ex_rs1_data <= `XLEN'b0;
+//        id_ex_rs2_data <= `XLEN'b0;
         id_ex_rs1_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rs2_addr <= {REGADDR_WIDTH{1'b0}};
         id_ex_rd       <= {REGADDR_WIDTH{1'b0}};
@@ -657,6 +678,7 @@ always @(posedge clk) begin
         alu_op_ctrl    <= `OP_RS1_RS2;
         wb_ctrl        <= WB_IDLE;
         id_ex_rf_we    <= 1'b0;
+        id_ex_is_uload <= 1'b0;
 
         id_ex_lsu_en   <= 1'b0;
         id_ex_lsu_we   <= 1'b0;

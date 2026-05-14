@@ -102,18 +102,18 @@ import "DPI-C" function void pmem_write(int waddr, int wdata, byte wmask);
         end
     endtask
     
-    LFSR (Linear Feedback Shift Register) for random number generation
+/*    LFSR (Linear Feedback Shift Register) for random number generation
     Using Fibonacci LFSR with taps at bits 31, 30, 28, 26
     
     
     Determine hit based on LFSR - MSBs give better randomness
 
     
-    Memory address (lower bits of address, masked to MEM_SIZE)
+    Memory address (lower bits of address, masked to MEM_SIZE)*/
     wire [11:0] mem_addr = addr[11:0];
     
-    Combinational read data path (like Regfile)
-    Return memory data directly when valid and read operation
+/*    Combinational read data path (like Regfile)
+    Return memory data directly when valid and read operation*/
     always @(*) begin
         case (size)
             2'b00: rdata = memory[mem_addr[11:2]] >> (mem_addr[1:0] * 8); // Byte
