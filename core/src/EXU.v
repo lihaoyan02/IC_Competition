@@ -343,7 +343,7 @@ end
             ex_lsu_wb_rd   <= 0;
             ex_lsu_wb_wen  <= 0;
             ex_lsu_is_uload <= 0;
-            ex_lsu_pc <= 0;
+            ex_lsu_pc <= ex_lsu_pc;
             ebreak_exu_lsu <= 0;
         end
     end

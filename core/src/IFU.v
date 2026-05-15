@@ -33,6 +33,7 @@ always @(posedge clk) begin
     ex_if_pc_valid_r <= ex_if_pc_valid;
 end
 
+
 always @(posedge clk) begin
 	if (rst) pc <= 32'h80000000;
     else begin
@@ -58,6 +59,27 @@ always @(posedge clk) begin
         if_id_instr <= if_id_instr;
         if_id_pc <= if_id_pc;
         if_id_instr_valid <= 0;
+    end
+    else if (ex_if_pc_valid_r && !id_if_instr_ready) begin
+        // Given that 
+        // 1. ex_if_pc = ex_glb_flush,
+        // 2. ex_glb_flush is asserted for one cycle while 
+        // 3. if_id_instr_valid is also required for just one-cycle 
+        // deassertion after ex_glb_flush is asserted, 
+        // 4. if_id_pc is not to combinational logic in IDU.
+        // if_id_instr_valid can be asserted 
+        // after one cycle ex_if_pc_valid_r is asserted while the next stage is not ready.
+        // In order to avoid error due to multi-cycle LSU.
+        if_id_instr <= if_id_instr;
+        if_id_pc <= if_id_pc;
+        if_id_instr_valid <= 1;        
+    end
+    else if (!id_if_instr_ready) begin  
+        // Prevent data flow when next stage is not ready.
+        // In order to avoid error due to multi-cycle LSU. 
+        if_id_instr <= if_id_instr;
+        if_id_pc <= if_id_pc;
+        if_id_instr_valid <= if_id_instr_valid;       
     end
     else if(imem_if_rvalid) begin
         if_id_instr <= imem_if_rdata;
