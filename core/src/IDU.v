@@ -79,11 +79,11 @@ wire [DATA_WIDTH-1:0] imm_B = {{20{if_id_instr[31]}}, if_id_instr[7], if_id_inst
 
 // Current IF/ID instruction is an unconditional jump.
 // Used only to stop IFU from fetching the next sequential PC.
-wire uncond_jump_in_id = if_id_instr_valid && j_en_nxt && (id_ex_J_cond_nxt == `J_UNCOND);
+// wire uncond_jump_in_id = if_id_instr_valid && j_en_nxt && (id_ex_J_cond_nxt == `J_UNCOND);
 
 
 //id_if_instr_ready
-assign id_if_instr_ready = ~id_glb_stall & ex_id_ready & ~uncond_jump_in_id; // ID stage is ready when EX can take a new instr for uncondJ, stop
+assign id_if_instr_ready = ~id_glb_stall & ex_id_ready; // ID stage is ready when EX can take a new instr for uncondJ, stop
 
 //***********************************************************//
 //                                                           //
@@ -578,7 +578,7 @@ always @(posedge clk) begin
     end
     else if (ex_glb_flush) begin
         id_ex_valid    <= 1'b0;
-        id_ex_pc       <= `XLEN'b0;
+        id_ex_pc       <= id_ex_pc;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
 //        id_ex_rs1_data <= `XLEN'b0;
 //        id_ex_rs2_data <= `XLEN'b0;
@@ -609,7 +609,7 @@ always @(posedge clk) begin
         // Insert bubble into ID/EX for load-use hazard.
         // IF/ID is held by id_if_instr_ready = 0.
         id_ex_valid    <= 1'b0;
-        id_ex_pc       <= `XLEN'b0;
+        id_ex_pc       <= id_ex_pc;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
 //        id_ex_rs1_data <= `XLEN'b0;
 //        id_ex_rs2_data <= `XLEN'b0;
@@ -636,7 +636,7 @@ always @(posedge clk) begin
         csr_addr  <= 12'b0;
 
     end
-    else if (if_id_instr_valid & (id_if_instr_ready | uncond_jump_in_id)) begin
+    else if (if_id_instr_valid & id_if_instr_ready) begin
         id_ex_valid    <= 1;
         id_ex_pc       <= if_id_pc;
         id_ex_imm      <= id_ex_imm_nxt;
@@ -666,7 +666,7 @@ always @(posedge clk) begin
     end
     else if (id_if_instr_ready & id_ex_valid) begin
         id_ex_valid    <= 1'b0;
-        id_ex_pc       <= 0;
+        id_ex_pc       <= id_ex_pc;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};
 //        id_ex_rs1_data <= `XLEN'b0;
 //        id_ex_rs2_data <= `XLEN'b0;
