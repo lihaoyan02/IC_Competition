@@ -79,11 +79,12 @@ wire [DATA_WIDTH-1:0] imm_B = {{20{if_id_instr[31]}}, if_id_instr[7], if_id_inst
 
 // Current IF/ID instruction is an unconditional jump.
 // Used only to stop IFU from fetching the next sequential PC.
-// wire uncond_jump_in_id = if_id_instr_valid && j_en_nxt && (id_ex_J_cond_nxt == `J_UNCOND);
+wire uncond_jump_in_id = if_id_instr_valid && j_en_nxt && (id_ex_J_cond_nxt == `J_UNCOND);
 
 
 //id_if_instr_ready
-assign id_if_instr_ready = ~id_glb_stall & ex_id_ready; // ID stage is ready when EX can take a new instr for uncondJ, stop
+wire inst_ready_inter = ~id_glb_stall & ex_id_ready;
+assign id_if_instr_ready = ~id_glb_stall & ex_id_ready & (!uncond_jump_in_id); // ID stage is ready when EX can take a new instr for uncondJ, stop
 
 //***********************************************************//
 //                                                           //
@@ -204,7 +205,7 @@ always @(*) begin
     if (rst)
         id_glb_stall = 1'b0;
     else
-        id_glb_stall = load_use_hazard;
+        id_glb_stall = load_use_hazard & ex_id_ready;
 end
 
 // -------------------------
@@ -636,7 +637,7 @@ always @(posedge clk) begin
         csr_addr  <= 12'b0;
 
     end
-    else if (if_id_instr_valid & id_if_instr_ready) begin
+    else if (if_id_instr_valid & inst_ready_inter) begin
         id_ex_valid    <= 1;
         id_ex_pc       <= if_id_pc;
         id_ex_imm      <= id_ex_imm_nxt;
@@ -664,7 +665,7 @@ always @(posedge clk) begin
         csr_event <= csr_event_nxt;
         csr_addr  <= csr_addr_nxt;
     end
-    else if (id_if_instr_ready & id_ex_valid) begin
+    else if (inst_ready_inter & id_ex_valid) begin
         id_ex_valid    <= 1'b0;
         id_ex_pc       <= id_ex_pc;
         id_ex_imm      <= {DATA_WIDTH{1'b0}};

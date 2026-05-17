@@ -64,7 +64,7 @@ override ARGS ?= --log=$(BUILD_DIR)/core-log.txt
 override ARGS += $(ARGS_DIFF)
 
 # Command to execute CORE
-IMG ?= ../build/add.bin
+IMG ?= ../build/bubble-sort.bin
 CORE_EXEC := $(BIN) $(ARGS) $(IMG)
 
 all: run-env
