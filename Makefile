@@ -68,5 +68,36 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
 $(BUILD_DIR)/%.txt: $(BUILD_DIR)/%.elf
 	$(OBJDUMP) -d -S $< > $@
 
+
+.PHONY: run_all run $(ALL)
+
+RESULT = .result
+$(shell > $(RESULT))
+
+COLOR_RED   = \033[1;31m
+COLOR_GREEN = \033[1;32m
+COLOR_NONE  = \033[0m
+
+ALL = $(basename $(notdir $(shell find test/. -name "*.c")))
+
+run_all: $(addprefix Makefile., $(ALL))
+	@echo "test list [$(words $(ALL)) item(s)]:" $(ALL)
+
+$(ALL): %: Makefile.%
+
+Makefile.%: test/%.c
+	@echo "NPCFLAGS = -b\nIMAGE = ../build/$*.bin\nrun:" > $@
+	@echo "\tmake -C ./core run ARGS=\$$(NPCFLAGS) IMG=\$$(IMAGE)" >> $@
+	@if make -s -f $@; then \
+		printf "[%14s] $(COLOR_GREEN)PASS$(COLOR_NONE)\n" $* >> $(RESULT); \
+	else \
+		printf "[%14s] $(COLOR_RED)***FAIL***$(COLOR_NONE)\n" $* >> $(RESULT); \
+	fi
+	-@rm -f Makefile.$*
+
+run: run_all all
+	@cat $(RESULT)
+	@rm $(RESULT)
+
 clean:
 	rm -rf $(BUILD_DIR)
