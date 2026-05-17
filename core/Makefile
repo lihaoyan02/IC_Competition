@@ -60,11 +60,12 @@ CXXFLAGS += $(if $(CONFIG_CC_ASAN),-fsanitize=address,)
 # Some convenient rules 
 include $(CORE_HOME)/scripts/difftest.mk
 
-override ARGS ?= --log=$(BUILD_DIR)/core-log.txt
+override ARGS ?=
+override ARGS += --log=$(BUILD_DIR)/core-log.txt
 override ARGS += $(ARGS_DIFF)
 
 # Command to execute CORE
-IMG ?= ../build/bubble-sort.bin
+IMG ?= ../build/pascal.bin
 CORE_EXEC := $(BIN) $(ARGS) $(IMG)
 
 all: run-env
