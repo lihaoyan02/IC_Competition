@@ -254,7 +254,7 @@ end
         ex_if_pc       = {DATA_WIDTH{1'b0}};
         ex_glb_flush   = 1'b0;
 
-        if (id_ex_valid && j_taken) begin
+        if (id_ex_valid && ex_id_ready && j_taken) begin
             ex_if_pc_valid = 1'b1;
             ex_glb_flush   = 1'b1;
 
