@@ -15,17 +15,21 @@ TEST_DIR = test
 SCRIPT_DIR = scripts
 SRC_DIR = src
 $(shell mkdir -p $(BUILD_DIR))
+$(shell mkdir -p $(BUILD_DIR)/isa)
 # Source files
 TEST_C_SOURCES = $(wildcard $(TEST_DIR)/*.c)
 SRC_C_SOURCES = $(wildcard $(SRC_DIR)/*.c)
 SRC_ASM_SOURCES = $(wildcard $(SRC_DIR)/*.S)
+TEST_ISA_SOURCES = $(wildcard riscv-tests/isa/rv32ui-p-*.dump)
 
 # If ALL is specified, compile only that test
 ifdef ALL
   TESTS = $(ALL)
+  ISA_TESTS = $(basename $(notdir $(TEST_ISA_SOURCES)))
 else
   # Default: compile all test files
   TESTS = $(basename $(notdir $(TEST_C_SOURCES)))
+  ISA_TESTS = $(basename $(notdir $(TEST_ISA_SOURCES)))
 endif
 
 # Compile src files (both .c and .S) into object files
@@ -40,9 +44,11 @@ ELF_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .elf,$(TESTS)))
 BIN_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .bin,$(TESTS)))
 TXT_FILES = $(addprefix $(BUILD_DIR)/,$(addsuffix .txt,$(TESTS)))
 
+ISA_BIN_FILES = $(addprefix $(BUILD_DIR)/isa/,$(addsuffix .bin,$(ISA_TESTS)))
+ISA_TXT_FILES = $(addprefix $(BUILD_DIR)/isa/,$(addsuffix .txt,$(ISA_TESTS)))
 .PHONY: all clean
 
-all: $(ELF_FILES) $(BIN_FILES) $(TXT_FILES)
+all: $(ELF_FILES) $(BIN_FILES) $(TXT_FILES) $(ISA_BIN_FILES) $(ISA_TXT_FILES)
 
 # Compile src/*.c files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -68,6 +74,11 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
 $(BUILD_DIR)/%.txt: $(BUILD_DIR)/%.elf
 	$(OBJDUMP) -d -S $< > $@
 
+# Generate binary files for ISA tests
+$(BUILD_DIR)/isa/%.bin: riscv-tests/isa/%
+	$(OBJCOPY) -O binary $< $@
+$(BUILD_DIR)/isa/%.txt: riscv-tests/isa/%
+	$(OBJDUMP) -d -S $< > $@
 
 .PHONY: run_all run $(ALL)
 
@@ -98,6 +109,9 @@ Makefile.%: test/%.c
 run: run_all all
 	@cat $(RESULT)
 	@rm $(RESULT)
+
+isa: $(ISA_BIN_FILES)
+	@make -f ./scripts/ISAtest.mk run
 
 clean:
 	rm -rf $(BUILD_DIR)
