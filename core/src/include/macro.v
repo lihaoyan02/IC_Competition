@@ -133,3 +133,5 @@
  `define WB_PC   3'b010
  `define WB_IMM  3'b011
  `define WB_MEM  3'b100
+
+ `define CSR_ADDR_WIDTH 12

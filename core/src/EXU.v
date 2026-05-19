@@ -33,10 +33,6 @@ module EXU #(
     output [4:0]               ex_rf_rs1_addr,
     output [4:0]               ex_rf_rs2_addr, 
 
-    // CSR read data
-    input [`XLEN-1:0]          csr_ex_rdata,
-
-
     // Signals to/from IFU
     output reg                 ex_if_pc_valid,
     output reg [`XLEN-1:0]     ex_if_pc,
@@ -58,6 +54,18 @@ module EXU #(
     output reg [`XLEN-1:0]     ex_lsu_pc,
     output reg                 ebreak_exu_lsu,
     /*----------------------------------------------*/
+
+    input                       id_ex_csr_wen,
+    input                       id_ex_csr_event,
+    input [`CSR_ADDR_WIDTH-1:0] id_ex_csr_addr,
+
+    output reg                  ex_csr_wen,
+    output reg [`XLEN-1:0]          ex_csr_pc,
+    output reg                  ex_csr_event,
+    output reg [`CSR_ADDR_WIDTH-1:0] ex_csr_raddr,
+    output reg [`CSR_ADDR_WIDTH-1:0] ex_csr_waddr,
+    output reg [`XLEN-1:0]          ex_csr_wdata,
+    input [`XLEN-1:0]          csr_ex_rdata,
 
     // Signals to/from WB stage (MEM/WB forwarding source)
     input                      wb_rf_we,
@@ -258,10 +266,11 @@ end
             ex_if_pc_valid = 1'b1;
             ex_glb_flush   = 1'b1;
 
-            if (is_jalr)
-                ex_if_pc = (fwd_rs1_data + id_ex_imm) & ~{{(DATA_WIDTH-1){1'b0}}, 1'b1};
-            else
-                ex_if_pc = id_ex_pc + id_ex_imm;
+            ex_if_pc = alu_out;
+            // if (is_jalr)
+            //     ex_if_pc = (fwd_rs1_data + id_ex_imm) & ~{{(DATA_WIDTH-1){1'b0}}, 1'b1};
+            // else
+            //     ex_if_pc = id_ex_pc + id_ex_imm;
         end
     end
 
@@ -269,34 +278,34 @@ end
     // Next EX/LSU payload generation
     //========================================================
     always @(*) begin
-    // ex_lsu_valid_nxt  = id_ex_valid;
-    ex_lsu_addr_nxt   = alu_out;
-    ex_lsu_data_nxt   = fwd_rs2_data;   // store data also needs forwarding
-    ex_lsu_wb_rd_nxt  = id_ex_rd;
-    ex_lsu_wb_wen_nxt = id_ex_rf_we;
+        // ex_lsu_valid_nxt  = id_ex_valid;
+        ex_lsu_addr_nxt   = alu_out;
+        ex_lsu_data_nxt   = fwd_rs2_data;   // store data also needs forwarding
+        ex_lsu_wb_rd_nxt  = id_ex_rd;
+        ex_lsu_wb_wen_nxt = id_ex_rf_we;
 
-    if (!id_ex_lsu_en)
-        ex_lsu_ctrl_nxt = 2'b00;
-    else if (id_ex_lsu_we)
-        ex_lsu_ctrl_nxt = 2'b10;
-    else
-        ex_lsu_ctrl_nxt = 2'b01;
+        if (!id_ex_lsu_en)
+            ex_lsu_ctrl_nxt = 2'b00;
+        else if (id_ex_lsu_we)
+            ex_lsu_ctrl_nxt = 2'b10;
+        else
+            ex_lsu_ctrl_nxt = 2'b01;
 
-    case (id_ex_lsu_ctrl)
-        `F3_LB, `F3_LBU: ex_lsu_size_nxt = 2'b00;
-        `F3_LH, `F3_LHU: ex_lsu_size_nxt = 2'b01;
-        `F3_LW         : ex_lsu_size_nxt = 2'b10;
-        default        : ex_lsu_size_nxt = 2'b10;
-    endcase
+        case (id_ex_lsu_ctrl)
+            `F3_LB, `F3_LBU: ex_lsu_size_nxt = 2'b00;
+            `F3_LH, `F3_LHU: ex_lsu_size_nxt = 2'b01;
+            `F3_LW         : ex_lsu_size_nxt = 2'b10;
+            default        : ex_lsu_size_nxt = 2'b10;
+        endcase
 
-    case (wb_ctrl)
-        `WB_PC  : ex_lsu_wb_data_nxt = id_ex_pc + 32'd4; // JAL / JALR
-        `WB_IMM : ex_lsu_wb_data_nxt = id_ex_imm;        // LUI
-        `WB_ALU : ex_lsu_wb_data_nxt = alu_out;          // ALU / AUIPC
-        `WB_MEM : ex_lsu_wb_data_nxt = alu_out;          // 
-        default: ex_lsu_wb_data_nxt = alu_out;
-    endcase
-end
+        case (wb_ctrl)
+            `WB_PC  : ex_lsu_wb_data_nxt = id_ex_pc + 32'd4; // JAL / JALR
+            `WB_IMM : ex_lsu_wb_data_nxt = id_ex_imm;        // LUI
+            `WB_ALU : ex_lsu_wb_data_nxt = alu_out;          // ALU / AUIPC
+            `WB_MEM : ex_lsu_wb_data_nxt = alu_out;          // 
+            default: ex_lsu_wb_data_nxt = alu_out;
+        endcase
+    end
 
 //***********************************************************//
 //                                                           //
@@ -348,4 +357,35 @@ end
         end
     end
 
+    //***********************************************************//
+    //                                                           //
+    //                  Reg Signals to CSR                       //
+    //                                                           //
+    //                                                           //
+    //                                                           //
+    //***********************************************************//
+    assign ex_csr_raddr = id_ex_csr_addr;
+    always @(posedge clk) begin
+        if (rst) begin
+            ex_csr_wen   <= 0;
+            ex_csr_pc    <= 0;
+            ex_csr_event <= 0;
+            ex_csr_waddr  <= 0;
+            ex_csr_wdata <= 0;
+        end
+        else if (ex_id_ready&id_ex_valid)begin
+            ex_csr_wen   <= id_ex_csr_wen;
+            ex_csr_pc    <= id_ex_pc;
+            ex_csr_event <= id_ex_csr_event;
+            ex_csr_waddr  <= id_ex_csr_addr;
+            ex_csr_wdata <= fwd_rs1_data; // write csr with rs1 data
+        end
+        else begin
+            ex_csr_wen   <= 0;
+            ex_csr_pc    <= 0;
+            ex_csr_event <= 0;
+            ex_csr_waddr  <= 0;
+            ex_csr_wdata <= 0;
+        end
+    end
 endmodule

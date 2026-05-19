@@ -49,6 +49,10 @@ module top (
     wire [2:0]       id_ex_J_cond;
     wire             id_ex_is_uload;
 
+    wire             id_ex_csr_wen;
+    wire             id_ex_csr_event;
+    wire [`CSR_ADDR_WIDTH-1:0] id_ex_csr_addr;
+
     //========================================================
     // Regfile / WBU wires
     //========================================================
@@ -80,6 +84,17 @@ module top (
 
     wire [`XLEN-1:0] ex_lsu_pc;
     wire             ebreak_exu_lsu;
+
+    //========================================================
+    // EXU -> CSR
+    //========================================================
+    wire             ex_csr_wen;
+    wire [`XLEN-1:0] ex_csr_pc;
+    wire             ex_csr_event;
+    wire [`CSR_ADDR_WIDTH-1:0] ex_csr_raddr;
+    wire [`CSR_ADDR_WIDTH-1:0] ex_csr_waddr;
+    wire [`XLEN-1:0] ex_csr_wdata;
+    wire [`XLEN-1:0] csr_ex_rdata;
 
     //========================================================
     // LSU -> Cache wires
@@ -191,9 +206,9 @@ module top (
 //        .id_rf_rs2_addr  (id_rf_rs2_addr),
 
         // Signals to/from CSR
-        .csr_wen         (),
-        .csr_event       (),
-        .csr_addr        (),
+        .id_ex_csr_wen         (id_ex_csr_wen),
+        .id_ex_csr_event       (id_ex_csr_event),
+        .id_ex_csr_addr        (id_ex_csr_addr),
 
         // Global stall ctrl
         .id_glb_stall    ()
@@ -252,8 +267,6 @@ module top (
         .ex_rf_rs1_addr  (ex_rf_rs1_addr),
         .ex_rf_rs2_addr  (ex_rf_rs2_addr),        
 
-        .csr_ex_rdata    ({`XLEN{1'b0}}),
-
         .ex_if_pc_valid  (ex_if_pc_valid),
         .ex_if_pc        (ex_if_pc),
 
@@ -274,11 +287,36 @@ module top (
         .ebreak_exu_lsu  (ebreak_exu_lsu),
         /*----------------------------------------------*/
 
+        .id_ex_csr_wen         (id_ex_csr_wen),
+        .id_ex_csr_event       (id_ex_csr_event),
+        .id_ex_csr_addr        (id_ex_csr_addr),
+
+        .ex_csr_wen     (ex_csr_wen),
+        .ex_csr_pc      (ex_csr_pc),
+        .ex_csr_event   (ex_csr_event),
+        .ex_csr_raddr   (ex_csr_raddr),
+        .ex_csr_waddr   (ex_csr_waddr),
+        .ex_csr_wdata   (ex_csr_wdata),
+        .csr_ex_rdata   (csr_ex_rdata),
+
         .wb_rf_we        (wb_rf_wen),
         .wb_rf_rd        (wb_rf_rd),
         .wb_rd_dat       (wb_rf_data)
     );
-
+    //========================================================
+    // CSR
+    //========================================================
+    CSR u_CSR (
+	.clk                (clk),
+	.rst                (rst),
+	.csr_wen            (ex_csr_wen),
+	.pc                 (ex_csr_pc),
+	.csr_event          (ex_csr_event),
+	.csr_raddr          (ex_csr_raddr),
+	.csr_waddr          (ex_csr_waddr),
+	.csr_wdata          (ex_csr_wdata),
+	.csr_rdata          (csr_ex_rdata)
+);
     //========================================================
     // L1 Cache
     //========================================================
