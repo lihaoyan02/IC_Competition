@@ -50,9 +50,9 @@ module IDU #(
 //    output reg [REGADDR_WIDTH-1:0] id_rf_rs2_addr,
 
     // Signals to/from csr
-    output reg        csr_wen,
-    output reg        csr_event,
-    output reg [11:0] csr_addr,
+    output reg        id_ex_csr_wen,
+    output reg        id_ex_csr_event,
+    output reg [`CSR_ADDR_WIDTH-1:0] id_ex_csr_addr,
 
     //Global stall ctrl
     output reg id_glb_stall
@@ -475,6 +475,7 @@ always @(*) begin
                     (id_ex_rd_nxt == {REGADDR_WIDTH{1'b0}})) begin
                     ebreak_flag_nxt = 1'b1;
                 end
+                /*ecall*/
                 else if (if_id_instr[31:7] == 25'b0) begin
                     csr_addr_nxt       = 12'h305; // mtvec
                     csr_event_nxt      = 1'b1;
@@ -482,12 +483,14 @@ always @(*) begin
                     alu_op_ctrl_nxt    = `OP_RS1_CSR;
                     j_en_nxt           = 1'b1;
                 end
+                /*mret*/
                 else if (if_id_instr[31:7] == 25'b001100000010_00000_000_00000) begin
                     csr_addr_nxt       = 12'h341; // mepc
                     id_ex_alu_ctrl_nxt = `ALU_OP2;
                     alu_op_ctrl_nxt    = `OP_RS1_CSR;
                     j_en_nxt           = 1'b1;
                 end
+                /*------csrrw------*/
                 else if (funct3 == 3'b001) begin
                     id_ex_alu_ctrl_nxt = `ALU_OP2;
                     alu_op_ctrl_nxt    = `OP_RS1_CSR;
@@ -495,6 +498,7 @@ always @(*) begin
                     id_ex_rf_we_nxt    = 1'b1;
                     wb_ctrl_nxt        = WB_ALU;
                 end
+                /*------csrrs------*/
                 else if (funct3 == 3'b010) begin
                     id_ex_alu_ctrl_nxt = `ALU_OR;
                     alu_op_ctrl_nxt    = `OP_RS1_CSR;
@@ -573,9 +577,9 @@ always @(posedge clk) begin
         j_en         <= 1'b0;
         id_ex_J_cond <= `J_UNCOND;
 
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
+        id_ex_csr_wen   <= 1'b0;
+        id_ex_csr_event <= 1'b0;
+        id_ex_csr_addr  <= 12'b0;
     end
     else if (ex_glb_flush) begin
         id_ex_valid    <= 1'b0;
@@ -601,9 +605,9 @@ always @(posedge clk) begin
         j_en         <= 1'b0;
         id_ex_J_cond <= `J_UNCOND;
 
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
+        id_ex_csr_wen   <= 1'b0;
+        id_ex_csr_event <= 1'b0;
+        id_ex_csr_addr  <= 12'b0;
     end
     else if (id_glb_stall) begin
 
@@ -632,9 +636,9 @@ always @(posedge clk) begin
         j_en         <= 1'b0;
         id_ex_J_cond <= `J_UNCOND;
 
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
+        id_ex_csr_wen   <= 1'b0;
+        id_ex_csr_event <= 1'b0;
+        id_ex_csr_addr  <= 12'b0;
 
     end
     else if (if_id_instr_valid & inst_ready_inter) begin
@@ -661,9 +665,9 @@ always @(posedge clk) begin
         j_en         <= j_en_nxt;
         id_ex_J_cond <= id_ex_J_cond_nxt;
 
-        csr_wen   <= csr_wen_nxt;
-        csr_event <= csr_event_nxt;
-        csr_addr  <= csr_addr_nxt;
+        id_ex_csr_wen   <= csr_wen_nxt;
+        id_ex_csr_event <= csr_event_nxt;
+        id_ex_csr_addr  <= csr_addr_nxt;
     end
     else if (inst_ready_inter & id_ex_valid) begin
         id_ex_valid    <= 1'b0;
@@ -689,9 +693,9 @@ always @(posedge clk) begin
         j_en         <= 1'b0;
         id_ex_J_cond <= `J_UNCOND;
 
-        csr_wen   <= 1'b0;
-        csr_event <= 1'b0;
-        csr_addr  <= 12'b0;
+        id_ex_csr_wen   <= 1'b0;
+        id_ex_csr_event <= 1'b0;
+        id_ex_csr_addr  <= 12'b0;
     end
 end
 
