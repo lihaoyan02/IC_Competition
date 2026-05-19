@@ -14,7 +14,7 @@ module CSR #(CSR_NUM = 4) (
 reg [`XLEN-1:0] csr [CSR_NUM-1:0];
 integer i = 0;
 
-import "DPI-C" function void unknow_inst();
+import "DPI-C" function void unknow_inst(int pc);
 
 always @(posedge clk) begin
 	if(rst) begin
@@ -30,7 +30,7 @@ always @(posedge clk) begin
                 csr[3] <= 32'hb;
             end
 			else begin
-                unknow_inst();
+                unknow_inst(pc);
             end
 		end
         else if(csr_wen) begin
@@ -43,7 +43,7 @@ always @(posedge clk) begin
 					csr[2] <= csr_wdata;
 				12'h342: //mecause
 					csr[3] <= csr_wdata;
-				default: unknow_inst();
+				default: unknow_inst(pc);
 			endcase
 		end
 	end
