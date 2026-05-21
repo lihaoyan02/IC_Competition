@@ -1,5 +1,19 @@
 # 2026 China College IC Competition
 集成电路创新创业大赛代码仓库
+
+## CPU 测试
+    设置环境变量
+    $ source set_env.sh
+### 运行指定测试
+    # riscv 指令测试
+    $ cd riscv-tests-am
+    $ make run
+    # 程序回归测试
+    $ cd am-kernels/tests/cpu-tests
+    $ make run #可指定程序如：ALL=sum
+    # coremark
+    $ cd am-kernels/benchmarks/coremark 
+    $ make run
 ## 工作流程及要求
 
 ### 代码初始化

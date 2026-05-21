@@ -2,7 +2,6 @@ AM_SRCS := riscv/core/start.S \
            riscv/core/trm.c \
            riscv/core/ioe.c \
            riscv/core/timer.c \
-           riscv/core/gpu.c \
            riscv/core/input.c \
            riscv/core/cte.c \
            riscv/core/trap.S
