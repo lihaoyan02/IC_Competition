@@ -80,6 +80,24 @@ config FTRACE
 
 endmenu
 
+menuconfig DEVICE
+	bool "Devices"
+	default n
+	help
+		Provide device support for NPC.
+
+if DEVICE
+
+config HAS_SERIAL
+	bool "Enable serial"
+	default y
+
+config HAS_TIMER
+	bool "Enable timer" 
+	default n
+
+endif
+
 config DIFFTEST
 	bool "Enable differential testing"
 	default n
