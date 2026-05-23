@@ -21,14 +21,17 @@ module IFU (
     input ex_glb_flush
 );
 
+reg ex_if_pc_valid_r;
+reg [`XLEN-1:0] pc;
+
 assign if_imem_araddr = pc;
 // 只有在IF/ID准备好接受新指令时才发出地址请求
 // id_if_instr_ready需要在ex_if_pc_valid后一拍置1(同步)
 assign if_imem_arvalid = (~rst) & (id_if_instr_ready | ex_if_pc_valid_r) &(~ex_glb_flush); 
-reg [`XLEN-1:0] pc;
+
 
 // 保证获得新的pc后向imem发起读请求
-reg ex_if_pc_valid_r;
+
 always @(posedge clk) begin
     ex_if_pc_valid_r <= ex_if_pc_valid;
 end
