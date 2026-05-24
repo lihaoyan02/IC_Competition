@@ -27,7 +27,7 @@ module LSU (
     input [`XLEN-1:0] ex_lsu_pc,
     output reg [`XLEN-1:0] lsu_wb_pc,
     input       ebreak_exu_lsu,
-    output      ebreak_lsu_wbu,
+    output reg  ebreak_lsu_wbu,     // Should be reg, but in last version a wire, so fixed
     /*----------------------------------------------*/
 
     // Data cache Interface

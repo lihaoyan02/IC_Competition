@@ -31,7 +31,7 @@ module EXU #(
     input [`XLEN-1:0]          rf_ex_rs1_data,
     input [`XLEN-1:0]          rf_ex_rs2_data,
     output [4:0]               ex_rf_rs1_addr,
-    output [4:0]               ex_rf_rs2_addr, 
+    output [4:0]               ex_rf_rs2_addr,
 
     // Signals to/from IFU
     output reg                 ex_if_pc_valid,

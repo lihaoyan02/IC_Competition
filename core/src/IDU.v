@@ -64,6 +64,31 @@ localparam WB_IDLE = 3'b000,
            WB_IMM  = 3'b011,
            WB_MEM  = 3'b100;
 
+           
+// -------------------------
+// Next-state decoded signals
+// -------------------------
+reg [DATA_WIDTH-1:0]       id_ex_imm_nxt;
+reg [REGADDR_WIDTH-1:0]    id_ex_rd_nxt;
+reg [3:0]                  id_ex_alu_ctrl_nxt;
+reg [1:0]                  alu_op_ctrl_nxt;
+reg [2:0]                  wb_ctrl_nxt;
+reg                        id_ex_rf_we_nxt;
+reg                        id_ex_lsu_en_nxt;
+reg                        id_ex_lsu_we_nxt;
+reg                        ebreak_flag_nxt;
+reg                        j_en_nxt;
+reg [2:0]                  id_ex_J_cond_nxt;
+reg                        csr_wen_nxt;
+reg                        csr_event_nxt;
+reg [11:0]                 csr_addr_nxt;
+reg [2:0]                  id_ex_lsu_ctrl_nxt;
+reg [REGADDR_WIDTH-1:0]    id_ex_rs1_addr_nxt;
+reg [REGADDR_WIDTH-1:0]    id_ex_rs2_addr_nxt;
+reg                        id_ex_is_uload_nxt;
+
+
+
 // -------------------------
 // Instruction fields
 // -------------------------
@@ -207,28 +232,6 @@ always @(*) begin
     else
         id_glb_stall = load_use_hazard & ex_id_ready;
 end
-
-// -------------------------
-// Next-state decoded signals
-// -------------------------
-reg [DATA_WIDTH-1:0]       id_ex_imm_nxt;
-reg [REGADDR_WIDTH-1:0]    id_ex_rd_nxt;
-reg [3:0]                  id_ex_alu_ctrl_nxt;
-reg [1:0]                  alu_op_ctrl_nxt;
-reg [2:0]                  wb_ctrl_nxt;
-reg                        id_ex_rf_we_nxt;
-reg                        id_ex_lsu_en_nxt;
-reg                        id_ex_lsu_we_nxt;
-reg                        ebreak_flag_nxt;
-reg                        j_en_nxt;
-reg [2:0]                  id_ex_J_cond_nxt;
-reg                        csr_wen_nxt;
-reg                        csr_event_nxt;
-reg [11:0]                 csr_addr_nxt;
-reg [2:0]                  id_ex_lsu_ctrl_nxt;
-reg [REGADDR_WIDTH-1:0]    id_ex_rs1_addr_nxt;
-reg [REGADDR_WIDTH-1:0]    id_ex_rs2_addr_nxt;
-reg                        id_ex_is_uload_nxt;
 
 
 `ifndef SYNTHESIS
